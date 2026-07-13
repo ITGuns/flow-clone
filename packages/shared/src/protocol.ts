@@ -94,6 +94,8 @@ export interface ErrorMessage {
   code: ErrorCode;
   message: string;
   retryable: boolean;
+  /** Present iff ERROR_TAXONOMY[code].requiresBackoff — server-specified backoff delay (v1.1.0). */
+  retryAfterMs?: number;
   utteranceId?: UtteranceId;
 }
 export interface PongMessage {
@@ -121,6 +123,7 @@ export function toErrorMessage(err: UndertoneError): ErrorMessage {
     code: err.code,
     message: err.message,
     retryable: err.retryable,
+    ...(err.retryAfterMs !== undefined ? { retryAfterMs: err.retryAfterMs } : {}),
     ...(err.utteranceId !== undefined ? { utteranceId: err.utteranceId } : {}),
   };
 }

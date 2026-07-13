@@ -5,7 +5,7 @@ friction is reported up to the orchestrator; the orchestrator amends; affected t
 re-dispatch. All types below live in `packages/shared/src/` and are imported — never
 redeclared — by `apps/api` and `apps/desktop`.
 
-Version: 1.0.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
+Version: 1.1.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
 
 ## 1. Core domain types (`packages/shared/src/types.ts`)
 
@@ -162,7 +162,7 @@ Server → client:
 | `format.delta` | `utteranceId, text` | append-only chunks |
 | `format.done` | `utteranceId, text, wordCount, timings` | `timings` per §9 |
 | `usage.update` | `wordsThisWeek, limit` | after each `format.done` |
-| `error` | `code, message, retryable, utteranceId?` | codes per §8 |
+| `error` | `code, message, retryable, retryAfterMs?, utteranceId?` | codes per §8; `retryAfterMs` present iff the taxonomy marks the code `requiresBackoff` (v1.1.0) |
 | `pong` | `ts` | |
 
 ### 4.4 Ordering, reconnect, replay, backpressure

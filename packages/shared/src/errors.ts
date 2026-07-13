@@ -138,6 +138,8 @@ export function isRetryable(code: ErrorCode): boolean {
 export interface UndertoneErrorOptions {
   /** Override the taxonomy default (e.g. resolve INTERNAL "maybe" to true when transient). */
   retryable?: boolean;
+  /** Server-specified backoff delay; set iff the taxonomy marks the code `requiresBackoff` (§4.3 v1.1.0). */
+  retryAfterMs?: number;
   utteranceId?: UtteranceId;
   cause?: unknown;
 }
@@ -146,6 +148,7 @@ export interface UndertoneErrorOptions {
 export class UndertoneError extends Error {
   readonly code: ErrorCode;
   readonly retryable: boolean;
+  readonly retryAfterMs: number | undefined;
   readonly utteranceId: UtteranceId | undefined;
 
   constructor(code: ErrorCode, message?: string, options?: UndertoneErrorOptions) {
@@ -156,6 +159,7 @@ export class UndertoneError extends Error {
     this.name = 'UndertoneError';
     this.code = code;
     this.retryable = options?.retryable ?? ERROR_TAXONOMY[code].retryable;
+    this.retryAfterMs = options?.retryAfterMs;
     this.utteranceId = options?.utteranceId;
   }
 }

@@ -5,7 +5,16 @@
       "PowerShell(pnpm --version)",
       "PowerShell(python --version)",
       "PowerShell(git init)",
-      "PowerShell(git branch -M main)"
+      "PowerShell(git branch -M main)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm -r typecheck)",
+      "Bash(pnpm -r lint)",
+      "Bash(pnpm -r test)",
+      "Bash(pnpm format *)",
+      "PowerShell(pnpm -r typecheck)",
+      "PowerShell(pnpm --filter @undertone/shared test)",
+      "PowerShell(git add -A)",
+      "PowerShell(git commit -m \"feat\\(contracts\\): v1.1.0 - retryAfterMs on error frame \\(0c friction\\)\")"
     ]
   }
 }
