@@ -32,3 +32,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# orchestrator-managed task worktrees
+.worktrees/

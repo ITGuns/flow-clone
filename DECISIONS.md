@@ -30,6 +30,10 @@ exact-word search with no plaintext leakage in the index. Substring/fuzzy search
 Rationale: keeps "transcripts encrypted at rest" *true* in the privacy policy, which §3 makes
 a non-negotiable.
 
+## 2026-07-14 — D-006: WS acking cadence
+Server acks audio frames every 25 frames (~500ms of audio) — frequent enough to bound the
+client replay buffer, sparse enough to be negligible bandwidth. In CONTRACTS.md §4.
+
 ## 2026-07-14 — D-007: CONTRACTS v1.1.0 — `retryAfterMs?` added to the `error` wire message
 Friction reported by task 0c: §8 RATE_LIMITED told the client to honor `retryAfterMs`, but
 §4.3's error frame had no such field. Amended (additive): optional `retryAfterMs`, present
@@ -41,7 +45,3 @@ than re-dispatching — below the dispatch threshold.
 1a–1f run concurrently; 1d/1e/1f all touch packages/shared, so each agent gets an isolated
 git worktree (guide §5.2's short-lived-branch discipline). Orchestrator merges on review at
 the Phase 1 gate, resolving barrel/index conflicts itself.
-
-## 2026-07-14 — D-006: WS acking cadence
-Server acks audio frames every 25 frames (~500ms of audio) — frequent enough to bound the
-client replay buffer, sparse enough to be negligible bandwidth. In CONTRACTS.md §4.
