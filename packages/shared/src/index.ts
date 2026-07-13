@@ -6,3 +6,4 @@ export * from './asr';
 export * from './formatter';
 export * from './protocol';
 export * from './frame-codec';
+export * from './golden';
