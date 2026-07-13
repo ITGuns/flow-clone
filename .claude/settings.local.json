@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version)",
+      "PowerShell(pnpm --version)",
+      "PowerShell(python --version)",
+      "PowerShell(git init)",
+      "PowerShell(git branch -M main)"
+    ]
+  }
+}
