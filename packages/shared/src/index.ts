@@ -8,3 +8,5 @@ export * from './protocol';
 export * from './frame-codec';
 export * from './golden';
 export * from './mock-asr';
+export * from './dict-filter';
+export * from './mock-formatter';
