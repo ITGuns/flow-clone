@@ -4,17 +4,35 @@ import { pathToFileURL } from 'node:url';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { UndertoneError, toErrorMessage } from '@undertone/shared';
 import { type Env, loadEnv } from './env';
+import { MockAuthenticator, registerSessionTokenRoute } from './routes/session-token';
+import { registerWsGateway, type GatewayDeps } from './ws';
 
 export interface HealthResponse {
   ok: true;
   mock: boolean;
 }
 
-/** Build a Fastify instance bound to the given environment. Pure — does not listen. */
-export function buildServer(env: Env): FastifyInstance {
+/**
+ * Build a Fastify instance bound to the given environment. Pure — does not listen.
+ *
+ * `gateway` supplies the injected ASRProvider + Formatter (Tasks 1d/1e). When present, the WS
+ * gateway (/v1/stream) is registered. It is optional because those provider impls land in parallel
+ * tasks; until then the server still exposes /healthz and POST /v1/session/token. The Phase 1 gate
+ * wires the concrete Mock/Deepgram/Haiku providers here.
+ */
+export function buildServer(env: Env, gateway?: GatewayDeps): FastifyInstance {
   const app = Fastify({ logger: false });
 
   app.get('/healthz', (): HealthResponse => ({ ok: true, mock: env.mock }));
+
+  // POST /v1/session/token (§5). MOCK_MODE authenticates every caller as the fixed mock user;
+  // the Clerk-backed Authenticator swaps in at the same seam in Phase 3.
+  registerSessionTokenRoute(app, new MockAuthenticator());
+
+  // WS gateway (§4). Registered only once its injected providers are supplied.
+  if (gateway) {
+    registerWsGateway(app, gateway);
+  }
 
   // Surface application errors on the same shape the WS `error` frame uses (§4.3/§8).
   app.setErrorHandler((error: unknown, _request, reply) => {

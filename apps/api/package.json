@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
+    "@fastify/websocket": "^11.0.2",
     "@undertone/shared": "workspace:*",
     "fastify": "^5.2.0",
+    "jose": "^5.9.6",
     "ws": "^8.21.0"
   },
   "devDependencies": {
