@@ -25,6 +25,7 @@ describe('GET /healthz', () => {
       STRIPE_WEBHOOK_SECRET: 'x',
       TRANSCRIPT_KEY: 'x',
       TOKEN_INDEX_KEY: 'x',
+      SESSION_JWT_SECRET: 'x',
     };
     const app = buildServer(loadEnv(realEnv));
     await app.ready();

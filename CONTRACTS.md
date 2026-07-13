@@ -5,7 +5,8 @@ friction is reported up to the orchestrator; the orchestrator amends; affected t
 re-dispatch. All types below live in `packages/shared/src/` and are imported — never
 redeclared — by `apps/api` and `apps/desktop`.
 
-Version: 1.1.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
+Version: 1.2.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
+References to "guide §…" mean `docs/BUILD_GUIDE.md`.
 
 ## 1. Core domain types (`packages/shared/src/types.ts`)
 
@@ -167,6 +168,8 @@ Server → client:
 
 ### 4.4 Ordering, reconnect, replay, backpressure
 - Client keeps a replay ring buffer of un-acked frames (cap 30s of audio = 1500 frames).
+- `lastAckedFrameSeq` is `-1` when no frame of the utterance was ever acked (server replays
+  from 0). (v1.2.0 clarification)
 - On transport loss mid-utterance: state → `buffering`; on reconnect (fresh token),
   send `session.resume`; server replies `session.ready` with its `lastReceivedFrameSeq`
   implied by next `audio.ack`; client replays from `lastAckedFrameSeq + 1`. If the server
@@ -284,5 +287,6 @@ STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 TRANSCRIPT_KEY=            # base64 32B; dev default generated into .env by scaffold
 TOKEN_INDEX_KEY=           # base64 32B; distinct from TRANSCRIPT_KEY
+SESSION_JWT_SECRET=        # HS256 secret for WS session tokens (§4.1); mock default in code
 POSTHOG_HOST=              # self-hosted; empty = telemetry disabled
 ```

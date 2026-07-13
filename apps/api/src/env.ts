@@ -13,6 +13,7 @@ export const REQUIRED_VARS = [
   'STRIPE_WEBHOOK_SECRET',
   'TRANSCRIPT_KEY',
   'TOKEN_INDEX_KEY',
+  'SESSION_JWT_SECRET',
 ] as const;
 
 export interface Env {
@@ -27,6 +28,7 @@ export interface Env {
   stripeWebhookSecret: string;
   transcriptKey: string;
   tokenIndexKey: string;
+  sessionJwtSecret: string; // mock mode falls back to a fixed dev secret
   posthogHost: string; // '' = telemetry disabled
 }
 
@@ -71,6 +73,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     stripeWebhookSecret: read('STRIPE_WEBHOOK_SECRET'),
     transcriptKey: read('TRANSCRIPT_KEY'),
     tokenIndexKey: read('TOKEN_INDEX_KEY'),
+    sessionJwtSecret: source.SESSION_JWT_SECRET ?? (mock ? 'mock-secret-do-not-ship' : ''),
     posthogHost: read('POSTHOG_HOST'),
   };
 }
