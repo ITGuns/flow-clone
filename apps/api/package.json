@@ -14,6 +14,10 @@
   },
   "dependencies": {
     "@undertone/shared": "workspace:*",
-    "fastify": "^5.2.0"
+    "fastify": "^5.2.0",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
   }
 }

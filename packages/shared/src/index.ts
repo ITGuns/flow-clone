@@ -7,3 +7,4 @@ export * from './formatter';
 export * from './protocol';
 export * from './frame-codec';
 export * from './golden';
+export * from './mock-asr';

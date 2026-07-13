@@ -1,0 +1,10 @@
+{
+  "id": "proper-nouns",
+  "partials": [
+    "we deployed",
+    "we deployed the service to cooper netties",
+    "we deployed the service to cooper netties this morning",
+    "we deployed the service to cooper netties this morning and it scaled without any issues"
+  ],
+  "final": "we deployed the service to cooper netties this morning and it scaled without any issues"
+}
