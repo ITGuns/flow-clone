@@ -35,3 +35,6 @@ Thumbs.db
 
 # orchestrator-managed task worktrees
 .worktrees/
+
+# machine-local permission grants
+.claude/settings.local.json
