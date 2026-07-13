@@ -1,7 +1,7 @@
 # STATUS
 
 **Product:** Undertone (codename) — cross-platform voice-to-text dictation SaaS
-**Phase:** 0 — Planning & foundation (in progress)
+**Phase:** 1 — The latency spine (6 tasks in flight)
 **Mode:** MOCK_MODE (no external API keys present — see HUMAN_TODO.md)
 **Last updated:** 2026-07-14
 
@@ -36,9 +36,14 @@ gates block *ship*, not *build*. Every missing key is in HUMAN_TODO.md with inst
 |---|---|---|---|
 | 0a | ARCHITECTURE.md + latency budget | ✅ done | Fable 5 |
 | 0b | CONTRACTS.md | ✅ done | Fable 5 |
-| 0c | Monorepo scaffold + CI + seeds | 🔄 dispatched | Opus 4.8 |
-| 1a–1f | Latency spine | ⬜ pending 0c | Opus 4.8 |
-| Gate 1 | Mock-mode integration gate | ⬜ | Fable 5 |
+| 0c | Monorepo scaffold + CI + seeds | ✅ done (41 tests; friction → CONTRACTS v1.1.0, D-007) | Opus 4.8 |
+| 1a | Audio capture + resample + VAD | 🔄 in flight (worktree task/1a) | Opus 4.8 |
+| 1b | WS client: framing, replay, backpressure | 🔄 in flight (task/1b) | Opus 4.8 |
+| 1c | WS gateway + utterance pipeline | 🔄 in flight (task/1c) | Opus 4.8 |
+| 1d | ASRProvider: Deepgram + mock | 🔄 in flight (task/1d) | Opus 4.8 |
+| 1e | Formatting: Haiku + dict-filter + mock | 🔄 in flight (task/1e) | Opus 4.8 |
+| 1f | Golden set + scoring harness | 🔄 in flight (task/1f) | Opus 4.8 |
+| Gate 1 | Merge task/1a–1f, integrate, mock-mode gate | ⬜ next | Fable 5 |
 | 2–5 | | ⬜ | |
 
 ## Gates
