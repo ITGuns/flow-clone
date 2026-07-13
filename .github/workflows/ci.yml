@@ -1,0 +1,59 @@
+name: CI
+
+# Keyless CI: everything runs under MOCK_MODE=1 (CONTRACTS.md §10, ARCHITECTURE.md §5).
+# No external API keys are required or referenced.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MOCK_MODE: '1'
+
+jobs:
+  # Primary gate: lint + typecheck + test across every workspace on Linux.
+  check:
+    name: check (ubuntu-latest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm -r lint
+      - run: pnpm -r test
+
+  # Native OS matrix. This is the landing zone for the per-OS native modules that arrive in
+  # Phase 2 (Windows SendInput/UIA, macOS AX). Until then it runs the same TS suites on
+  # macos-latest and windows-latest to prove install/typecheck/test are green on both OSes —
+  # the definition of "compiles and passes" for native code (STATUS.md constraint #2).
+  native-matrix:
+    name: native (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm -r test

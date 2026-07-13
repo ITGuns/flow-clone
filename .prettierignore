@@ -1,0 +1,13 @@
+node_modules/
+dist/
+out/
+build/
+coverage/
+pnpm-lock.yaml
+
+# Orchestrator-owned governance & invariant docs — not formatted by this task.
+ARCHITECTURE.md
+CONTRACTS.md
+STATUS.md
+DECISIONS.md
+HUMAN_TODO.md

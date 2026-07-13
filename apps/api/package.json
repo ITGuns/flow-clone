@@ -1,0 +1,19 @@
+{
+  "name": "@undertone/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Undertone API — Fastify WS gateway + REST. Boots keyless under MOCK_MODE=1.",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@undertone/shared": "workspace:*",
+    "fastify": "^5.2.0"
+  }
+}
