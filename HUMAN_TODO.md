@@ -107,3 +107,27 @@ caret still in it (Undertone must NOT come forward — guide §4.7). Note the re
 
 **Pass = every numbered step behaves as described on a physical Mac.** File any deviation as a 2a
 bug with the app name, the observed `method`/`code`, and whether focus moved.
+
+### 13. Windows native verification (task 2b) — physical Windows 11 machine (this one qualifies)
+
+**Preconditions**
+- The `native (windows-latest)` CI job is green (win32 addon compiled + smoke-loaded). NOTE: this
+  orchestrator host lacks the build toolchain (no MSVC/VS Build Tools, no resolvable Python), so
+  the addon could NOT be compiled locally during the build — CI is the compile authority. To run
+  this script locally you must first install VS Build Tools (C++ workload) + Python 3, then
+  `pnpm --filter @undertone/desktop build:native`.
+
+1. **Addon smoke** — `pnpm --filter @undertone/desktop build:native; pnpm --filter @undertone/desktop smoke:native` → prints the win32 addon smoke OK line.
+2. **Hotkey while unfocused** — register PTT (e.g. `F8` or `RightControl`); click into Notepad so Undertone is unfocused; hold → exactly one `down`; release → exactly one `up`. Hold 3s → still exactly one `down` (auto-repeat suppressed by the pure re-entrancy guard).
+3. **SendInput injection — plain** — focus Notepad, inject "hello world" → text at caret, `{ok:true, method:'sendinput'}`.
+4. **Unicode/emoji** — inject "héllo 👋 —" → renders correctly incl. the surrogate-pair emoji (KEYEVENTF_UNICODE path).
+5. **Cross-app landing** — repeat step 3 in Slack, VS Code, Chrome address bar, Gmail compose (in-browser) → text lands in each, no focus change.
+6. **Own-HUD guard** — focus the Undertone window itself and inject → `{ok:false, code:'NO_TARGET'}`, nothing typed.
+7. **No foreground** — show the bare desktop and inject → `NO_TARGET`.
+8. **Clipboard fallback** — put known text on the clipboard; force a SendInput-rejecting target; inject → text still appears via paste, `method:'clipboard-fallback'`, and the **original clipboard content is restored**.
+9. **UIPI / elevated target** — run Undertone non-elevated; focus an app running as Administrator (e.g. elevated PowerShell); inject → `{ok:false, code:'NO_PERMISSION'}`, no partial text, no clipboard clobber.
+10. **Active-app detection** — with Slack focused, capture context → `bundleId:"slack.exe"`, `appName:"Slack"` (from version info), `windowTitle` populated and ≤256 chars; repeat with VS Code (`Code.exe`).
+11. **Lifecycle/leak** — register then unregister the hotkey 50× → no crash, no lingering global hook (other apps' keyboard latency unaffected).
+
+**Pass = every numbered step behaves as described on physical Windows.** File deviations as a 2b
+bug with app name, observed `method`/`code`, and whether focus moved.

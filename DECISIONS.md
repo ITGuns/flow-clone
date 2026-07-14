@@ -30,6 +30,41 @@ exact-word search with no plaintext leakage in the index. Substring/fuzzy search
 Rationale: keeps "transcripts encrypted at rest" *true* in the privacy policy, which §3 makes
 a non-negotiable.
 
+## 2026-07-14 — D-013: Phase 2 double-dispatch — real, not a false alarm (corrected)
+Both the 2a and 2b agents reported a "concurrent writer" editing their worktree. I first
+judged this a misread (only one agent dispatched per worktree; worktrees are isolated). WRONG:
+six completion notifications arrived for four dispatched tasks — two distinct agent task-ids
+each for 2a and 2b. So two agents genuinely ran in each of those worktrees (mechanism unclear;
+likely a harness-level relaunch). The isolation premise held (2a's writer never touched 2b's
+files — separate directories), but "one agent per worktree" did not. Outcome was still clean:
+the second agent in each pair DETECTED the other and reconciled rather than overwriting, and I
+independently verified both committed HEADs green (2a 105 desktop tests, 2b 89) before merging.
+Lesson: verify agent-count claims against notification task-ids, not against intent.
+
+## 2026-07-14 — D-014: Unified native loader on 2a's `NativeModule` shape
+2a and 2b diverged on the loader: 2a's async convention-based `loadNativeModule(): NativeModule`
+(with `checkPermission`, fields hotkeys/injector/detector, graceful NativeUnavailableError) vs
+2b's sync `loadNativePlatform(): NativePlatform` (hotkeys/injector/activeApp, no permission). Kept
+2a's (richer; `checkPermission` is what the 2d permission wiring will consume in Phase 4). Adapted
+win32 to expose the same `createNativeModule(): NativeModule` (detector = its activeApp;
+checkPermission → 'granted' since Windows needs no accessibility grant for SendInput/hooks).
+2b's createWin32Platform + its tests retained.
+
+## 2026-07-14 — D-015: Cross-platform native build via a dispatcher
+build:native/smoke:native now route through native/build-native.mjs + smoke-native.mjs, which
+dispatch on process.platform and no-op off-target-OS. Lets the CI native-matrix run ONE
+unconditional build/smoke step per leg (each builds only its own addon), and merges 2a's mac +
+2b's win build steps into a single pair. binding.gyp files stay OS-scoped (type:none off-target)
+so cross-OS `pnpm install` never tries to build a foreign addon.
+
+## 2026-07-14 — D-016: Native addons uncompilable in-container; PermissionBridge→native deferred
+Neither addon compiled here: macOS is impossible in a non-mac env; the Windows host has no MSVC/
+VS Build Tools and no resolvable Python (node-gyp prerequisites). Both rely on OS-matrix CI as the
+compile authority (guide §4.5). Also: 2d's `PermissionBridge` real wiring to the native
+`checkPermission` + Electron mic APIs is deferred to Phase 4 (task 4d onboarding), where it is
+first consumed and where the Electron main process actually runs — writing it now would be an
+untestable composition root. The `FakePermissionBridge` seam is in place.
+
 ## 2026-07-14 — D-006: WS acking cadence
 Server acks audio frames every 25 frames (~500ms of audio) — frequent enough to bound the
 client replay buffer, sparse enough to be negligible bandwidth. In CONTRACTS.md §4.
