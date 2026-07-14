@@ -19,6 +19,7 @@
     "@undertone/shared": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.2.0",
+    "ioredis": "^5.11.1",
     "jose": "^5.9.6",
     "postgres": "^3.4.9",
     "ws": "^8.21.0"
