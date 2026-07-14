@@ -51,3 +51,59 @@ Check this file whenever you return to the run.
 ---
 *Physical-machine test scripts will be appended here by the orchestrator as Phase 2+ tasks
 complete (numbered manual tests per guide §8).*
+
+## Physical-machine verification scripts (guide §8)
+
+*Appended as Phase 2+ native tasks complete. Each is a numbered manual test on real hardware —
+the part of "done" CI cannot see (guide §4.5). Run every step; a single failure fails the check.*
+
+### 12. macOS native verification (task 2a) — needs a physical Mac + HUMAN_TODO #3 (CI green first)
+
+**Preconditions**
+- The macos-latest `native (macos-latest)` CI job is green (addon compiled + smoke-loaded). CI
+  green is necessary but NOT sufficient — it never exercises a real hotkey or real injection.
+- A dev build of the desktop app runs on the Mac (or a harness that loads the compiled
+  `apps/desktop/native/mac/build/Release/undertone_mac.node` plus the `src/native/darwin`
+  wrappers). Build locally with `pnpm --filter @undertone/desktop build:native`.
+
+**A. Grant Accessibility permission (the gate for everything below)**
+1. Launch the app. Confirm `checkPermission()` reports `denied` before any grant (fresh machine).
+2. System Settings → Privacy & Security → Accessibility. Enable the Undertone app (or your dev
+   host, e.g. Terminal/Electron). Quit and relaunch.
+3. Confirm `checkPermission()` now reports `granted`. If still `denied`, you enabled the wrong
+   binary — the trusted process is the one that loaded the addon.
+
+**B. Hotkey fires while the target app is unfocused (§2.3 HotkeyManager, guide §4.7)**
+4. Register the push-to-talk accelerator (e.g. `F13`). Click into a DIFFERENT app (Notes) so
+   Undertone has no window focus.
+5. Press and hold the hotkey. Confirm exactly ONE `down` transition is logged (not one per
+   auto-repeat) while held. Release. Confirm exactly ONE `up`.
+6. Tap the hotkey rapidly 5x while unfocused. Confirm 5 clean `down`/`up` pairs, none dropped or
+   doubled. Proves the CGEventTap sees system-wide keys and the wrapper de-bounce holds on real
+   key-repeat.
+
+**C. Injection lands at the cursor of the frontmost app, focus never stolen (§2.3 TextInjector)**
+For EACH app: click into its text area, leave it frontmost, inject a known string ("the quick
+brown fox"), and confirm the text appears AT THE CURSOR with that app still frontmost and the
+caret still in it (Undertone must NOT come forward — guide §4.7). Note the reported
+`InjectResult.method`.
+7. **Slack** (composer) — expect `method: "ax"`; text at caret.
+8. **VS Code** (editor) — expect `ax`; if the field rejects the AX write, expect
+   `clipboard-fallback` and verify the prior clipboard contents are restored afterward.
+9. **Chrome** (address bar or a Gmail compose / any `<textarea>`) — expect `ax` or
+   `clipboard-fallback`; text at caret, page not navigated away.
+10. **Notes** — expect `ax`; text at caret.
+11. **Gmail in the browser** (compose body) — expect `ax` or `clipboard-fallback`; subject and
+    recipients untouched, only the body receives text.
+12. In every case, confirm the frontmost app did NOT change and no Undertone window took keyboard
+    focus during injection (watch the menu-bar app name — it must stay the target app's).
+
+**D. Error paths (honest failure, guide §8)**
+13. Revoke Accessibility permission and relaunch. Trigger an injection. Confirm
+    `{ ok: false, code: "NO_PERMISSION" }` and an honest HUD permission-needed state — no crash,
+    no silent no-op.
+14. Focus a surface with no text field (Desktop/Finder, nothing selected) and inject. Confirm
+    `NO_TARGET` (not a crash). Re-grant permission afterward.
+
+**Pass = every numbered step behaves as described on a physical Mac.** File any deviation as a 2a
+bug with the app name, the observed `method`/`code`, and whether focus moved.

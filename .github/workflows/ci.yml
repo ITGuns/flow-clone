@@ -57,3 +57,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r typecheck
       - run: pnpm -r test
+      # macOS: compile the task-2a N-API addon (AX injection, CGEventTap hotkey, active app) and
+      # smoke-load it. build:native / smoke:native are no-ops on windows-latest (win32 addon = 2b).
+      - name: Build native addon (macOS)
+        if: runner.os == 'macOS'
+        run: pnpm --filter @undertone/desktop build:native
+      - name: Smoke-load native addon (macOS)
+        if: runner.os == 'macOS'
+        run: pnpm --filter @undertone/desktop smoke:native
