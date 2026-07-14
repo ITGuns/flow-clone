@@ -1,7 +1,7 @@
 # STATUS
 
 **Product:** Undertone (codename) — cross-platform voice-to-text dictation SaaS
-**Phase:** 1 — The latency spine (6 tasks in flight)
+**Phase:** 1 gate PASSED (mock) → Phase 2 — Native integration
 **Mode:** MOCK_MODE (no external API keys present — see HUMAN_TODO.md)
 **Last updated:** 2026-07-14
 
@@ -37,22 +37,24 @@ gates block *ship*, not *build*. Every missing key is in HUMAN_TODO.md with inst
 | 0a | ARCHITECTURE.md + latency budget | ✅ done | Fable 5 |
 | 0b | CONTRACTS.md | ✅ done | Fable 5 |
 | 0c | Monorepo scaffold + CI + seeds | ✅ done (41 tests; friction → CONTRACTS v1.1.0, D-007) | Opus 4.8 |
-| 1a | Audio capture + resample + VAD | 🔄 in flight (worktree task/1a) | Opus 4.8 |
-| 1b | WS client: framing, replay, backpressure | 🔄 in flight (task/1b) | Opus 4.8 |
-| 1c | WS gateway + utterance pipeline | 🔄 in flight (task/1c) | Opus 4.8 |
-| 1d | ASRProvider: Deepgram + mock | 🔄 in flight (task/1d) | Opus 4.8 |
-| 1e | Formatting: Haiku + dict-filter + mock | 🔄 in flight (task/1e) | Opus 4.8 |
-| 1f | Golden set + scoring harness | 🔄 in flight (task/1f) | Opus 4.8 |
-| Gate 1 | Merge task/1a–1f, integrate, mock-mode gate | ⬜ next | Fable 5 |
-| 2–5 | | ⬜ | |
+| 1a | Audio capture + resample + VAD | ✅ 44 tests | Opus 4.8 |
+| 1b | WS client: framing, replay, backpressure | ✅ 19 tests | Opus 4.8 |
+| 1c | WS gateway + utterance pipeline | ✅ 33 tests | Opus 4.8 |
+| 1d | ASRProvider: Deepgram + mock | ✅ 32 tests | Opus 4.8 |
+| 1e | Formatting: Haiku + dict-filter + mock | ✅ 86 tests | Opus 4.8 |
+| 1f | Golden set + scoring harness | ✅ 42 fixtures, 21 tests | Opus 4.8 |
+| Gate 1 | Integration + mock-mode gate | ✅ **PASSED** (see Gates) | Fable 5 |
+| 2a–2d | Native integration | 🔄 dispatching | Opus 4.8 |
+| 3–5 | | ⬜ | |
 
 ## Gates
 
 | Gate | Result |
 |---|---|
 | Latency budget sums < 1.2s on paper | ✅ 950ms p50 + 250ms margin (ARCHITECTURE.md §4) |
-| Phase 1 mock-mode gate | not yet run |
-| Phase 1 real-mode gate | blocked on keys (HUMAN_TODO #1, #2) |
+| Phase 1 mock-mode gate | ✅ PASSED 2026-07-14 — 232 tests green; full-pipeline E2E over real WS (token→frames→partials→final→deltas→done); §9 marks monotonic; mock timings t_format_done=158ms (happy), 225ms (FORMAT_TIMEOUT raw-fallback); MockFormatter 26/26 golden mock-scoped cases |
+| Phase 1 real-mode gate | ⛔ blocked on keys (HUMAN_TODO #1, #2) — blocks ship, not build |
+| OS-matrix CI | ⛔ blocked on GitHub remote (HUMAN_TODO #3) |
 
 ## Spend split (target: ≤15% Fable / ≥85% Opus)
 

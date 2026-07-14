@@ -45,3 +45,27 @@ than re-dispatching — below the dispatch threshold.
 1a–1f run concurrently; 1d/1e/1f all touch packages/shared, so each agent gets an isolated
 git worktree (guide §5.2's short-lived-branch discipline). Orchestrator merges on review at
 the Phase 1 gate, resolving barrel/index conflicts itself.
+
+## 2026-07-14 — D-009: `retryAfterMs` emitted for ALL requiresBackoff codes (ratified)
+1c read §4.3 v1.1.0 literally: `retryAfterMs` present iff the taxonomy marks the code
+`requiresBackoff` — so ASR_*/FORMAT_*/OFFLINE_BUFFERED carry a 1000ms default, not just
+RATE_LIMITED. That reading is correct and is now the ratified semantics. No change.
+
+## 2026-07-14 — D-010: WS auth rejection lands as close(4401) post-upgrade
+§4.1 says "before upgrade completes"; @fastify/websocket cannot cleanly reject pre-upgrade.
+The client observes close code 4401 identically either way. Accepted; revisit only if a
+proxy/CDN needs the HTTP-level reject.
+
+## 2026-07-14 — D-011: Golden set corrected to the exhaustive §4.3 grammar
+1f (built before docs/BUILD_GUIDE.md existed in-repo) invented colon/semicolon commands and
+used "exclamation mark" for the grammar's "exclamation point"; two list cases used bare
+"new line" as a bullet marker. All corrected at the gate (replacements keep the set at 42);
+MockFormatter now passes 26/26 mock-scoped cases. Root cause fixed by committing the guide
+to docs/ and pointing CONTRACTS.md at it. Governance docs added to .prettierignore.
+
+## 2026-07-14 — D-012: Phase 1 gate verdict — mock-mode PASSED
+232 tests; real-WS full-pipeline E2E green incl. FORMAT_TIMEOUT raw-fallback; §9 timing
+marks monotonic and plumbed end-to-end; spine overhead beyond injected mock delays is
+single-digit ms. Real-mode gate (live Deepgram + Haiku p50/p95) remains blocked on keys —
+blocks ship, not build. Phases 2 (native) proceeds; 3 (backend) after 2 merges, per the
+guide's sequential-phase discipline.
