@@ -14,13 +14,14 @@
 // these — task 1e's MockFormatter must match; kept here so both sides share one spec):
 //   1. strip disfluencies: whole words "um" | "uh" | "er" | "erm" (case-insensitive)
 //   2. "scratch that" deletes the sentence immediately preceding it
-//   3. list: split the utterance on the spoken delimiter "new line" → markdown bullets
-//      ("- " + item, first letter of each item capitalized, no terminal period)
+//   3. list: "bullet list" / "numbered list" … "end list" with items delimited by the spoken
+//      "new line" → markdown list ("- " / "N. " + item, first letter of each item capitalized,
+//      no terminal period). Bare "new line" / "new paragraph" outside a list are line/para breaks.
 //   4. "all caps X end caps" → uppercase(X), markers removed
 //   5. "quote X end quote" → "X" (straight double quotes)
-//   6. punctuation words attach to the preceding word, no leading space:
-//        period → .   comma → ,   question mark → ?   exclamation mark → !
-//        colon → :    semicolon → ;
+//   6. punctuation words attach to the preceding word, no leading space. The grammar (guide §4.3)
+//      is EXACTLY: period → .   comma → ,   question mark → ?   exclamation point → !
+//      (there is no colon/semicolon command — any other word is prose)
 //   7. sentence-start capitalization
 //   8. terminal period appended to a prose sentence that lacks terminal punctuation
 import { readFileSync, readdirSync } from 'node:fs';

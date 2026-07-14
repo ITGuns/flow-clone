@@ -70,10 +70,10 @@
     "expected": "Are you coming?"
   },
   {
-    "id": "cmd-punct-exclamation-mark",
+    "id": "cmd-punct-exclamation-point",
     "kind": "command",
     "haikuOnly": false,
-    "input": "watch out exclamation mark",
+    "input": "watch out exclamation point",
     "appContext": {
       "bundleId": "com.apple.TextEdit",
       "appName": "TextEdit",
@@ -84,10 +84,10 @@
     "expected": "Watch out!"
   },
   {
-    "id": "cmd-punct-colon",
+    "id": "cmd-new-paragraph",
     "kind": "command",
     "haikuOnly": false,
-    "input": "note colon stay calm period",
+    "input": "first thought new paragraph second thought",
     "appContext": {
       "bundleId": "com.apple.TextEdit",
       "appName": "TextEdit",
@@ -95,13 +95,13 @@
       "register": "document"
     },
     "dictionary": [],
-    "expected": "Note: stay calm."
+    "expected": "First thought.\n\nSecond thought."
   },
   {
-    "id": "cmd-punct-semicolon",
+    "id": "cmd-numbered-list",
     "kind": "command",
     "haikuOnly": false,
-    "input": "we came semicolon we saw period",
+    "input": "numbered list buy milk new line walk dog end list",
     "appContext": {
       "bundleId": "com.apple.TextEdit",
       "appName": "TextEdit",
@@ -109,7 +109,7 @@
       "register": "document"
     },
     "dictionary": [],
-    "expected": "We came; we saw."
+    "expected": "1. Buy milk\n2. Walk dog"
   },
   {
     "id": "cmd-punct-disfluency-combo",
@@ -241,7 +241,7 @@
     "id": "cmd-list-grocery",
     "kind": "command",
     "haikuOnly": false,
-    "input": "milk new line eggs new line bread",
+    "input": "bullet list milk new line eggs new line bread end list",
     "appContext": {
       "bundleId": "com.apple.TextEdit",
       "appName": "TextEdit",
@@ -255,7 +255,7 @@
     "id": "cmd-list-steps",
     "kind": "command",
     "haikuOnly": false,
-    "input": "test the code new line ship the build",
+    "input": "bullet list test the code new line ship the build end list",
     "appContext": {
       "bundleId": "com.apple.TextEdit",
       "appName": "TextEdit",

@@ -218,7 +218,9 @@ export class WsClient {
     if (this.terminated) return;
     this.clearReconnect();
     // Mid-utterance reconnects present as `buffering` (§3); everything else as `connecting`.
-    this.setState(this.reconnecting && this.activeUtteranceId !== undefined ? 'buffering' : 'connecting');
+    this.setState(
+      this.reconnecting && this.activeUtteranceId !== undefined ? 'buffering' : 'connecting',
+    );
 
     let token: string;
     try {
@@ -389,8 +391,16 @@ export class WsClient {
       this.pump();
       // If key-up already happened before the drop, re-announce the last frame so the server
       // can finalize the resumed utterance.
-      if (this.audioEndSent && this.activeUtteranceId !== undefined && this.lastFrameSeq !== undefined) {
-        this.raw({ t: 'audio.end', utteranceId: this.activeUtteranceId, lastFrameSeq: this.lastFrameSeq });
+      if (
+        this.audioEndSent &&
+        this.activeUtteranceId !== undefined &&
+        this.lastFrameSeq !== undefined
+      ) {
+        this.raw({
+          t: 'audio.end',
+          utteranceId: this.activeUtteranceId,
+          lastFrameSeq: this.lastFrameSeq,
+        });
       }
     }
     this.flushPendingControls();

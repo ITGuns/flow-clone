@@ -1,16 +1,20 @@
 // Session-token JWT — CONTRACTS.md §4.1 / §5. HS256, 60s expiry, claims { sub, plan, jti }.
 //
-// SEAM (flag): the signing secret is read from `process.env.SESSION_JWT_SECRET` directly here
-// rather than from `apps/api/src/env.ts`, because env.ts is outside this task's allowlist and
-// does not yet carry SESSION_JWT_SECRET. The mock-mode default keeps the keyless build green.
-// The orchestrator reconciles this into the typed Env at the Phase 1 gate.
+// The signing/verifying secret is INJECTED (plumbed from the typed Env's `sessionJwtSecret`,
+// CONTRACTS §10) — this module never reads `process.env`. The `MOCK_JWT_SECRET` default keeps
+// direct callers (tests, the keyless build) green; it matches the mock-mode default in env.ts,
+// so a token signed with the default verifies against a gateway wired from the mock Env.
 import { SignJWT, jwtVerify, errors as joseErrors } from 'jose';
 import type { Plan } from '../routes/session-token';
 
 /** Token lifetime — CONTRACTS.md §4.1 ("HS256, 60s expiry"). */
 export const SESSION_TOKEN_TTL_SEC = 60;
 
-/** Dev/mock fallback secret. Never used in real mode — the gate wires a real secret via env. */
+/**
+ * Dev/mock fallback secret. Mirrors env.ts' mock-mode `sessionJwtSecret` so a default-signed
+ * token verifies against a mock-Env-wired gateway. Never used in real mode — the composition
+ * root plumbs the real secret from Env into both the token route and the gateway.
+ */
 export const MOCK_JWT_SECRET = 'mock-secret-do-not-ship';
 
 /** The signed claim set — CONTRACTS.md §4.1 (`{ sub: userId, plan, jti }`). */
@@ -20,10 +24,9 @@ export interface SessionClaims {
   jti: string;
 }
 
-/** Read the HS256 secret. `process.env.SESSION_JWT_SECRET` with a mock-mode default. */
-function secretKey(): Uint8Array {
-  const raw = process.env.SESSION_JWT_SECRET ?? MOCK_JWT_SECRET;
-  return new TextEncoder().encode(raw);
+/** Encode an HS256 secret string into the key bytes jose expects. */
+function secretKey(secret: string): Uint8Array {
+  return new TextEncoder().encode(secret);
 }
 
 export interface SignedToken {
@@ -32,9 +35,13 @@ export interface SignedToken {
   expiresAt: string;
 }
 
-/** Mint a session token. `nowMs` is injectable for deterministic tests. */
+/**
+ * Mint a session token signed with `secret` (plumbed from Env.sessionJwtSecret). `nowMs` is
+ * injectable for deterministic tests; `secret` defaults to the mock secret for keyless callers.
+ */
 export async function signSessionToken(
   claims: SessionClaims,
+  secret: string = MOCK_JWT_SECRET,
   nowMs: number = Date.now(),
 ): Promise<SignedToken> {
   const iat = Math.floor(nowMs / 1000);
@@ -44,7 +51,7 @@ export async function signSessionToken(
     .setSubject(claims.sub)
     .setIssuedAt(iat)
     .setExpirationTime(exp)
-    .sign(secretKey());
+    .sign(secretKey(secret));
   return { token, expiresAt: new Date(exp * 1000).toISOString() };
 }
 
@@ -63,13 +70,17 @@ export class TokenInvalidError extends Error {
 }
 
 /**
- * Verify a session token and extract its claims. Throws {@link TokenExpiredError} on expiry and
- * {@link TokenInvalidError} on any other failure (bad signature, malformed, missing claims).
+ * Verify a session token against `secret` (plumbed from Env.sessionJwtSecret) and extract its
+ * claims. Throws {@link TokenExpiredError} on expiry and {@link TokenInvalidError} on any other
+ * failure (bad signature, malformed, missing claims). `secret` defaults to the mock secret.
  */
-export async function verifySessionToken(token: string): Promise<SessionClaims> {
+export async function verifySessionToken(
+  token: string,
+  secret: string = MOCK_JWT_SECRET,
+): Promise<SessionClaims> {
   let payload: Record<string, unknown>;
   try {
-    const result = await jwtVerify(token, secretKey(), { algorithms: ['HS256'] });
+    const result = await jwtVerify(token, secretKey(secret), { algorithms: ['HS256'] });
     payload = result.payload;
   } catch (err) {
     if (err instanceof joseErrors.JWTExpired) throw new TokenExpiredError();

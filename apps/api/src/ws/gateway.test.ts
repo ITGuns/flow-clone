@@ -21,7 +21,7 @@ import {
 } from '@undertone/shared';
 import { buildServer } from '../index';
 import { loadEnv } from '../env';
-import { signSessionToken } from './jwt';
+import { MOCK_JWT_SECRET, signSessionToken } from './jwt';
 import { SessionStore } from './session-store';
 import { countWords } from './pipeline';
 import type { GatewayDeps } from './gateway';
@@ -236,6 +236,7 @@ describe('WS handshake / auth (§4.1)', () => {
     });
     const { token } = await signSessionToken(
       { sub: 'user_mock', plan: 'pro', jti: 'j1' },
+      MOCK_JWT_SECRET,
       Date.now() - 120_000,
     );
     const client = new TestClient(`${url}?token=${token}`);
@@ -354,6 +355,54 @@ describe('resume (§4.4)', () => {
 
     // Second stream (post-resume) received only the two genuinely-new frames.
     expect(asr.streams[1]!.sent.length).toBe(2);
+  });
+
+  it('resumes with lastAckedFrameSeq -1 and replays from 0 without loss (§4.4 v1.2.0)', async () => {
+    // -1 ⇒ the client never observed an ack for this utterance, so it replays the whole utterance
+    // from seq 0. The server must de-dup the replayed prefix against its high-water and forward
+    // only the genuinely-new tail — no data loss, no double-counting.
+    const asr = new FakeASRProvider({ finalText: 'replayed from zero' });
+    const store = new SessionStore();
+    const url = await startServer({
+      asrProvider: asr,
+      formatter: new FakeFormatter(),
+      sessionStore: store,
+    });
+
+    const c1 = new TestClient(`${url}?token=${await validToken()}`);
+    await startSession(c1, 'sess-neg');
+    c1.sendJSON({ t: 'utterance.start', utteranceId: 1, appContext: APP_CONTEXT });
+    // Six frames land server-side but are never acked (the first ack fires at seq 24).
+    for (let seq = 0; seq <= 5; seq++) c1.sendFrame(frame(1, seq));
+    await delay(80); // let the frames be processed before the drop
+    c1.close(); // transport loss
+    await delay(80); // let the server observe the close + markDisconnected
+
+    const c2 = new TestClient(`${url}?token=${await validToken()}`);
+    await c2.waitOpen();
+    c2.sendJSON({
+      t: 'session.resume',
+      sessionId: 'sess-neg',
+      utteranceId: 1,
+      lastAckedFrameSeq: -1,
+    });
+    await c2.waitType('session.ready');
+    // The server's high-water (5) surfaces via the ack it emits right after ready — proving the
+    // six pre-disconnect frames were retained across the resume.
+    const resumeAck = await c2.waitFor((m) => m.t === 'audio.ack' && m.frameSeq === 5);
+    expect(resumeAck).toMatchObject({ utteranceId: 1, frameSeq: 5 });
+
+    // Full replay from 0: seq 0..5 are dups (dropped + re-acked), seq 6..9 are genuinely new.
+    for (let seq = 0; seq <= 9; seq++) c2.sendFrame(frame(1, seq));
+    c2.sendJSON({ t: 'audio.end', utteranceId: 1, lastFrameSeq: 9 });
+
+    const final = await c2.waitType('transcript.final');
+    expect(final).toMatchObject({ t: 'transcript.final', text: 'replayed from zero' });
+    await c2.waitType('format.done');
+
+    // The post-resume ASR stream received only the four new frames (6..9); the replayed prefix
+    // (0..5) was dropped as out-of-order dups against the restored high-water.
+    expect(asr.streams[1]!.sent.length).toBe(4);
   });
 
   it('rejects resume after the 60s window with SESSION_INVALID', async () => {

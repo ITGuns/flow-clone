@@ -68,7 +68,12 @@ describe('connection & auth (§4.1)', () => {
     expect(h.transport.last.url).toBe('wss://api.test/v1/stream?token=tok-1');
     expect(states).toEqual(['connecting', 'connected']);
 
-    h.client.sendControl({ t: 'session.start', sessionId: 'sess-1', appContext: APP, locale: 'en-US' });
+    h.client.sendControl({
+      t: 'session.start',
+      sessionId: 'sess-1',
+      appContext: APP,
+      locale: 'en-US',
+    });
     h.transport.last.emit({ t: 'session.ready', sessionId: 'sess-1' });
     expect(states).toEqual(['connecting', 'connected', 'ready']);
     expect(h.client.getState()).toBe('ready');
@@ -219,10 +224,7 @@ describe('reconnect + resume + replay (§4.4)', () => {
     expect(conn2.sentSeqs).toEqual([5, 6, 7, 8, 9, 10, 11]);
 
     // Server-side view = acked frames from conn1 (0..4) + everything conn2 received (5..11) = 0..11.
-    const serverStream = [
-      ...conn1.sentSeqs.filter((s) => s <= 4),
-      ...conn2.sentSeqs,
-    ];
+    const serverStream = [...conn1.sentSeqs.filter((s) => s <= 4), ...conn2.sentSeqs];
     expect(serverStream).toEqual(Array.from({ length: 12 }, (_, i) => i));
   });
 

@@ -18,7 +18,7 @@ import {
   type UtteranceId,
 } from '@undertone/shared';
 import type { Plan } from '../routes/session-token';
-import { TokenExpiredError, verifySessionToken } from './jwt';
+import { MOCK_JWT_SECRET, TokenExpiredError, verifySessionToken } from './jwt';
 import { PermissiveRateLimiter, type RateLimiter } from './rate-limiter';
 import { SessionStore } from './session-store';
 import { SessionStateMachine } from './state-machine';
@@ -67,8 +67,16 @@ interface ActiveUtterance {
   frameWaiter?: { lastFrameSeq: number; fire: () => void };
 }
 
-/** Register @fastify/websocket and the /v1/stream route. */
-export function registerWsGateway(app: FastifyInstance, deps: GatewayDeps): void {
+/**
+ * Register @fastify/websocket and the /v1/stream route. `jwtSecret` is the HS256 verification
+ * secret plumbed from Env.sessionJwtSecret (§10, §4.1) by the composition root; it defaults to
+ * the mock secret so keyless callers (tests) stay green.
+ */
+export function registerWsGateway(
+  app: FastifyInstance,
+  deps: GatewayDeps,
+  jwtSecret: string = MOCK_JWT_SECRET,
+): void {
   const resolved: Required<Omit<GatewayDeps, 'ttftTimeoutMs'>> &
     Pick<GatewayDeps, 'ttftTimeoutMs'> = {
     asrProvider: deps.asrProvider,
@@ -83,7 +91,7 @@ export function registerWsGateway(app: FastifyInstance, deps: GatewayDeps): void
     await scope.register(websocket);
     scope.get('/v1/stream', { websocket: true }, (socket: WebSocket, req: FastifyRequest) => {
       const token = (req.query as { token?: string }).token ?? '';
-      new Connection(socket, resolved).begin(token);
+      new Connection(socket, resolved, jwtSecret).begin(token);
     });
   });
 }
@@ -103,6 +111,7 @@ class Connection {
     private readonly socket: WebSocket,
     private readonly deps: Required<Omit<GatewayDeps, 'ttftTimeoutMs'>> &
       Pick<GatewayDeps, 'ttftTimeoutMs'>,
+    private readonly jwtSecret: string,
   ) {
     socket.on('message', (data: Buffer, isBinary: boolean) => {
       this.enqueue(() => this.onMessage(data, isBinary));
@@ -127,7 +136,7 @@ class Connection {
 
   private async authenticate(token: string): Promise<void> {
     try {
-      const claims = await verifySessionToken(token);
+      const claims = await verifySessionToken(token, this.jwtSecret);
       this.user = { userId: claims.sub, plan: claims.plan };
     } catch (err) {
       // Both expired and invalid close 4401 (§4.1); reason distinguishes for client telemetry.

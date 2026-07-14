@@ -8,6 +8,7 @@ import {
   TokenExpiredError,
   TokenInvalidError,
   signSessionToken,
+  MOCK_JWT_SECRET,
 } from '../ws/jwt';
 import {
   MockAuthenticator,
@@ -61,6 +62,7 @@ describe('session JWT helpers', () => {
     // Issued 2 minutes ago with a 60s TTL → already expired.
     const { token } = await signSessionToken(
       { sub: 'u1', plan: 'pro', jti: 'j1' },
+      MOCK_JWT_SECRET,
       Date.now() - 120_000,
     );
     await expect(verifySessionToken(token)).rejects.toBeInstanceOf(TokenExpiredError);
@@ -68,6 +70,13 @@ describe('session JWT helpers', () => {
 
   it('rejects a garbage token with TokenInvalidError', async () => {
     await expect(verifySessionToken('not.a.jwt')).rejects.toBeInstanceOf(TokenInvalidError);
+  });
+
+  it('binds signature to the injected secret (§10 plumbing)', async () => {
+    // A token signed with one Env secret must verify under that secret and no other.
+    const { token } = await signSessionToken({ sub: 'u1', plan: 'pro', jti: 'j1' }, 'secret-A');
+    await expect(verifySessionToken(token, 'secret-A')).resolves.toMatchObject({ sub: 'u1' });
+    await expect(verifySessionToken(token, 'secret-B')).rejects.toBeInstanceOf(TokenInvalidError);
   });
 
   it('MockAuthenticator resolves the fixed principal', async () => {

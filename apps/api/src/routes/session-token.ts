@@ -3,11 +3,12 @@
 //
 // In MOCK_MODE the route authenticates every request as a fixed mock user (`user_mock`, plan
 // 'pro') and mints an HS256 session JWT (§4.1). The Clerk-backed authenticator lands in Phase 3
-// and swaps in behind the same interface.
+// and swaps in behind the same interface. The HS256 signing secret is INJECTED from the typed
+// Env (§10) by the composition root — this module never reads process.env.
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { UndertoneError, toErrorMessage } from '@undertone/shared';
-import { signSessionToken } from '../ws/jwt';
+import { MOCK_JWT_SECRET, signSessionToken } from '../ws/jwt';
 
 export type Plan = 'free' | 'pro';
 
@@ -39,10 +40,15 @@ export interface SessionTokenResponse {
   expiresAt: string;
 }
 
-/** Register `POST /v1/session/token`. 200 → `{ token, expiresAt }`; 401 on auth failure (§5). */
+/**
+ * Register `POST /v1/session/token`. 200 → `{ token, expiresAt }`; 401 on auth failure (§5).
+ * `jwtSecret` is the HS256 signing secret plumbed from Env.sessionJwtSecret (§10); it defaults to
+ * the mock secret so keyless direct callers stay green.
+ */
 export function registerSessionTokenRoute(
   app: FastifyInstance,
   authenticator: Authenticator,
+  jwtSecret: string = MOCK_JWT_SECRET,
 ): void {
   app.post(
     '/v1/session/token',
@@ -63,11 +69,14 @@ export function registerSessionTokenRoute(
         void reply.status(401).send(wire);
         return;
       }
-      const { token, expiresAt } = await signSessionToken({
-        sub: user.userId,
-        plan: user.plan,
-        jti: randomUUID(),
-      });
+      const { token, expiresAt } = await signSessionToken(
+        {
+          sub: user.userId,
+          plan: user.plan,
+          jti: randomUUID(),
+        },
+        jwtSecret,
+      );
       return { token, expiresAt };
     },
   );
