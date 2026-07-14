@@ -22,7 +22,13 @@ import { MOCK_JWT_SECRET, TokenExpiredError, verifySessionToken } from './jwt';
 import { PermissiveRateLimiter, type RateLimiter } from './rate-limiter';
 import { SessionStore } from './session-store';
 import { SessionStateMachine } from './state-machine';
-import { runUtterancePipeline, wireError } from './pipeline';
+import {
+  runUtterancePipeline,
+  wireError,
+  type LoadDictionaryHook,
+  type MeterHook,
+  type PersistHook,
+} from './pipeline';
 
 /** Frames acked every 25 (~500ms of audio) — CONTRACTS.md §4.3 / DECISIONS D-006. */
 const ACK_EVERY = 25;
@@ -48,6 +54,26 @@ export interface GatewayDeps {
   ttftTimeoutMs?: number;
   /** Timing-mark clock; defaults to Date.now. Injected for deterministic tests. */
   now?: () => number;
+  // ── Phase 3 pipeline hooks (injected by the composition root; absent → that step is skipped) ──
+  /** §6: load the connected user's full dictionary (Task 3d `loadDictionaryForUser`). */
+  loadDictionary?: LoadDictionaryHook;
+  /** §7: persist the finalized transcript at `format.done` (Task 3c `persistTranscript`). */
+  persistTranscript?: PersistHook;
+  /** §7/§8: meter words at `format.done` → `usage.update` + `QUOTA_EXCEEDED` (Task 3f `meterUsage`). */
+  meterUsage?: MeterHook;
+}
+
+/** GatewayDeps after defaults are applied. Optional hooks stay optional (undefined = skip). */
+interface ResolvedDeps {
+  asrProvider: ASRProvider;
+  formatter: Formatter;
+  rateLimiter: RateLimiter;
+  sessionStore: SessionStore;
+  now: () => number;
+  ttftTimeoutMs?: number;
+  loadDictionary?: LoadDictionaryHook;
+  persistTranscript?: PersistHook;
+  meterUsage?: MeterHook;
 }
 
 interface BoundUser {
@@ -77,14 +103,16 @@ export function registerWsGateway(
   deps: GatewayDeps,
   jwtSecret: string = MOCK_JWT_SECRET,
 ): void {
-  const resolved: Required<Omit<GatewayDeps, 'ttftTimeoutMs'>> &
-    Pick<GatewayDeps, 'ttftTimeoutMs'> = {
+  const resolved: ResolvedDeps = {
     asrProvider: deps.asrProvider,
     formatter: deps.formatter,
     rateLimiter: deps.rateLimiter ?? new PermissiveRateLimiter(),
     sessionStore: deps.sessionStore ?? new SessionStore(),
     now: deps.now ?? Date.now,
-    ttftTimeoutMs: deps.ttftTimeoutMs,
+    ...(deps.ttftTimeoutMs !== undefined ? { ttftTimeoutMs: deps.ttftTimeoutMs } : {}),
+    ...(deps.loadDictionary ? { loadDictionary: deps.loadDictionary } : {}),
+    ...(deps.persistTranscript ? { persistTranscript: deps.persistTranscript } : {}),
+    ...(deps.meterUsage ? { meterUsage: deps.meterUsage } : {}),
   };
   // Encapsulated so the websocket plugin decorates before the route is defined.
   app.register(async (scope) => {
@@ -109,8 +137,7 @@ class Connection {
 
   constructor(
     private readonly socket: WebSocket,
-    private readonly deps: Required<Omit<GatewayDeps, 'ttftTimeoutMs'>> &
-      Pick<GatewayDeps, 'ttftTimeoutMs'>,
+    private readonly deps: ResolvedDeps,
     private readonly jwtSecret: string,
   ) {
     socket.on('message', (data: Buffer, isBinary: boolean) => {
@@ -363,6 +390,7 @@ class Connection {
   }
 
   private async runPipeline(u: ActiveUtterance, keyupMs: number): Promise<void> {
+    const user = this.user;
     await runUtterancePipeline({
       utteranceId: u.utteranceId,
       asrStream: u.stream,
@@ -374,6 +402,11 @@ class Connection {
       keyupMs,
       now: this.deps.now,
       ...(this.deps.ttftTimeoutMs !== undefined ? { ttftTimeoutMs: this.deps.ttftTimeoutMs } : {}),
+      // Phase 3: identity + hooks drive the §6 dictionary, §7 persistence, and §7/§8 metering.
+      ...(user ? { userId: user.userId, plan: user.plan } : {}),
+      ...(this.deps.loadDictionary ? { loadDictionary: this.deps.loadDictionary } : {}),
+      ...(this.deps.persistTranscript ? { persist: this.deps.persistTranscript } : {}),
+      ...(this.deps.meterUsage ? { meter: this.deps.meterUsage } : {}),
     });
     // Utterance complete; the session stays resumable until transport loss + 60s.
     if (this.utterance === u) this.utterance = undefined;

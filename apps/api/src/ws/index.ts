@@ -10,6 +10,11 @@ export {
   FORMAT_TTFT_TIMEOUT_MS,
   DEFAULT_BACKOFF_MS,
   type PipelineParams,
+  type PersistHook,
+  type PersistHookInput,
+  type MeterHook,
+  type MeterHookResult,
+  type LoadDictionaryHook,
 } from './pipeline';
 export {
   signSessionToken,

@@ -19,18 +19,22 @@ import {
   AsrTimeoutError,
   ERROR_TAXONOMY,
   UndertoneError,
+  filterDictionary,
   toErrorMessage,
   type ASRStream,
   type AppContext,
+  type DictionaryEntry,
   type ErrorCode,
   type ErrorMessage,
   type FormatRequest,
   type FormatResult,
   type Formatter,
+  type Register,
   type ServerMessage,
   type Timings,
   type UtteranceId,
 } from '@undertone/shared';
+import type { Plan } from '../routes/session-token';
 import { SessionStateMachine } from './state-machine';
 
 /** Contract TTFT ceiling — CONTRACTS.md §8 ("no TTFT within 2000ms" → FORMAT_TIMEOUT). */
@@ -66,6 +70,32 @@ export function wireError(
   );
 }
 
+/** What {@link PersistHook} receives at `format.done` (§4.3 fields + §7 columns). No audio. */
+export interface PersistHookInput {
+  userId: string;
+  text: string;
+  appName: string;
+  register: Register;
+  wordCount: number;
+}
+
+/** Encrypt-and-store one finalized transcript (Task 3c `persistTranscript`, wired at the gate). */
+export type PersistHook = (input: PersistHookInput) => Promise<unknown>;
+
+/** What {@link MeterHook} reports (Task 3f `meterUsage` result). */
+export interface MeterHookResult {
+  wordsThisWeek: number;
+  limit: number;
+  /** True once the weekly total has strictly passed the plan cap (§8 `QUOTA_EXCEEDED`). */
+  exceeded: boolean;
+}
+
+/** Meter `wordCount` words for `userId` on their effective `plan` (Task 3f `meterUsage`). */
+export type MeterHook = (userId: string, wordCount: number, plan: Plan) => Promise<MeterHookResult>;
+
+/** Load a user's FULL dictionary for §6 filtering (Task 3d `loadDictionaryForUser`). */
+export type LoadDictionaryHook = (userId: string) => Promise<DictionaryEntry[]>;
+
 export interface PipelineParams {
   utteranceId: UtteranceId;
   asrStream: ASRStream;
@@ -83,6 +113,19 @@ export interface PipelineParams {
   now?: () => number;
   /** TTFT ceiling; defaults to the §8 contract value. Lowered in tests to keep them fast. */
   ttftTimeoutMs?: number;
+  /** The authenticated user (JWT `sub`). Enables the dictionary/persist/meter hooks. */
+  userId?: string;
+  /**
+   * The connection's EFFECTIVE plan (from the JWT `plan` claim, already resolved by the
+   * authenticator — MockAuthenticator/ClerkAuthenticator). Metering derives the weekly cap from it.
+   */
+  plan?: Plan;
+  /** §6: load the user's full dictionary; the pipeline then `filterDictionary`s it per transcript. */
+  loadDictionary?: LoadDictionaryHook;
+  /** §7: persist the finalized transcript at `format.done` (encrypted; never audio). */
+  persist?: PersistHook;
+  /** §7/§8: meter words at `format.done`; drives `usage.update` + `QUOTA_EXCEEDED`. */
+  meter?: MeterHook;
 }
 
 const TIMEOUT = Symbol('ttft-timeout');
@@ -120,8 +163,45 @@ export async function runUtterancePipeline(params: PipelineParams): Promise<void
     keyupMs,
     now = Date.now,
     ttftTimeoutMs = FORMAT_TTFT_TIMEOUT_MS,
+    userId,
+    plan,
+    loadDictionary,
+    persist,
+    meter,
   } = params;
   const since = (): number => now() - keyupMs;
+
+  /**
+   * Post-format side-effects — run AFTER `format.done` is on the wire on BOTH the success path and
+   * the §8 raw-injection fallback, so the user's words are NEVER eaten. Persistence + metering
+   * failures degrade silently (the utterance already succeeded); nothing here logs transcript
+   * content (§9). Emits `usage.update` (§4.3) and, when the weekly cap is passed, the
+   * `QUOTA_EXCEEDED` error frame (§8) — which follows the already-delivered transcript.
+   */
+  const postFormat = async (text: string, wordCount: number): Promise<void> => {
+    if (persist && userId !== undefined) {
+      try {
+        await persist({
+          userId,
+          text,
+          appName: appContext.appName,
+          register: appContext.register,
+          wordCount,
+        });
+      } catch {
+        /* degrade: persistence failure never kills a delivered utterance; no content logged */
+      }
+    }
+    if (meter && userId !== undefined && plan !== undefined) {
+      try {
+        const metered = await meter(userId, wordCount, plan);
+        send({ t: 'usage.update', wordsThisWeek: metered.wordsThisWeek, limit: metered.limit });
+        if (metered.exceeded) send(wireError('QUOTA_EXCEEDED', utteranceId));
+      } catch {
+        /* degrade: metering failure never kills a delivered utterance */
+      }
+    }
+  };
 
   // ── ASR finalize ──────────────────────────────────────────────────────────────────────────
   let transcript: string;
@@ -140,12 +220,24 @@ export async function runUtterancePipeline(params: PipelineParams): Promise<void
   machine.dispatch('asr.final'); // finalizing → formatting
   send({ t: 'transcript.final', utteranceId, text: transcript, asrMs: tAsrFinal });
 
-  // ── Build the FormatRequest (§6). Dictionary is [] in v1 — storage lands in Phase 3; this is
-  //    the injection point where the capped/filtered dictionary will be supplied. ───────────────
+  // ── Build the FormatRequest (§6). Load the user's FULL dictionary (Task 3d), then apply the
+  //    shared §6 `filterDictionary` against the finalized transcript so FormatRequest.dictionary is
+  //    "ALREADY capped/filtered" per the §1 contract — and mock + real formatter paths receive the
+  //    SAME filtered input (HaikuFormatter re-runs the same filter internally; it is idempotent on
+  //    an already-capped set). A dictionary-load failure degrades to an empty dictionary rather
+  //    than killing the utterance. ─────────────────────────────────────────────────────────────
+  let dictionary: DictionaryEntry[] = [];
+  if (loadDictionary && userId !== undefined) {
+    try {
+      dictionary = filterDictionary(await loadDictionary(userId), transcript);
+    } catch {
+      dictionary = [];
+    }
+  }
   const request: FormatRequest = {
     transcript,
     appContext,
-    dictionary: [],
+    dictionary,
     locale,
   };
   const tPromptBuilt = since();
@@ -186,14 +278,17 @@ export async function runUtterancePipeline(params: PipelineParams): Promise<void
     // §8 raw-injection fallback: error frame AND a format.done carrying the RAW transcript.
     machine.toError();
     send(wireError(code, utteranceId));
+    const rawWordCount = countWords(transcript);
     send({
       t: 'format.done',
       utteranceId,
       text: transcript,
-      wordCount: countWords(transcript),
+      wordCount: rawWordCount,
       timings: buildTimings(tAsrFinal, tPromptBuilt, tFormatTtft, since()),
     });
     machine.reset('idle');
+    // The raw words were still delivered → persist + meter them like any other utterance (§7/§8).
+    await postFormat(transcript, rawWordCount);
     return;
   }
 
@@ -207,6 +302,7 @@ export async function runUtterancePipeline(params: PipelineParams): Promise<void
     wordCount: result.wordCount,
     timings: buildTimings(tAsrFinal, tPromptBuilt, tFormatTtft, since()),
   });
+  await postFormat(finalText, result.wordCount);
 }
 
 /** Assemble the §9 server marks. Omits t_format_ttft when formatting never produced a token. */
