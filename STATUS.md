@@ -44,8 +44,18 @@ gates block *ship*, not *build*. Every missing key is in HUMAN_TODO.md with inst
 | 1e | Formatting: Haiku + dict-filter + mock | ✅ 86 tests | Opus 4.8 |
 | 1f | Golden set + scoring harness | ✅ 42 fixtures, 21 tests | Opus 4.8 |
 | Gate 1 | Integration + mock-mode gate | ✅ **PASSED** (see Gates) | Fable 5 |
-| 2a–2d | Native integration | 🔄 dispatching | Opus 4.8 |
-| 3–5 | | ⬜ | |
+| 2a | macOS hotkey + AX injection | 🔄 in flight (task/2a) | Opus 4.8 |
+| 2b | Windows hotkey + SendInput/UIA | 🔄 in flight (task/2b) | Opus 4.8 |
+| 2c | active-app → Register signal | 🔄 in flight (task/2c) | Opus 4.8 |
+| 2d | permission pre-prompt flows | 🔄 in flight (task/2d) | Opus 4.8 |
+| Gate 2 | pure-layer merge + integrate | ⬜ next (Fable) | Fable 5 |
+| 3–5 | | ⬜ pending Gate 2 | |
+
+> **Phase 2 completion is structurally blocked on OS-matrix CI (HUMAN_TODO #3, GitHub remote).**
+> The guide's definition of done for native code = green CI on macos-latest + windows-latest.
+> In-container I can verify the *pure logic layers* (bridge-isolated, mock-tested) and the
+> Windows addon may compile locally, but the macOS addon and both physical-machine checkpoints
+> cannot close without the remote + hardware. Build continues; native *ship* readiness waits.
 
 ## Gates
 
