@@ -9,8 +9,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
     "test": "vitest run",
-    "build:native": "node native/mac/build-if-darwin.mjs",
-    "smoke:native": "node native/mac/smoke.mjs"
+    "build:native": "node native/build-native.mjs",
+    "smoke:native": "node native/smoke-native.mjs"
   },
   "dependencies": {
     "@undertone/shared": "workspace:*",
@@ -22,6 +22,7 @@
     "@types/react-dom": "^18.3.0",
     "electron": "^33.0.0",
     "jsdom": "^29.1.1",
+    "node-addon-api": "^8.3.0",
     "node-gyp": "^11.0.0"
   }
 }

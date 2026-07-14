@@ -57,11 +57,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r typecheck
       - run: pnpm -r test
-      # macOS: compile the task-2a N-API addon (AX injection, CGEventTap hotkey, active app) and
-      # smoke-load it. build:native / smoke:native are no-ops on windows-latest (win32 addon = 2b).
-      - name: Build native addon (macOS)
-        if: runner.os == 'macOS'
+      # Compile + smoke-load the per-OS N-API addon on its real runner — the CI authority for
+      # native code (guide §4.5): macOS = task-2a AX injection / CGEventTap hotkey; windows =
+      # task-2b SendInput / low-level hook. build:native and smoke:native dispatch on
+      # process.platform (native/build-native.mjs) and no-op off their target OS, so a single
+      # unconditional invocation builds exactly the right addon on each matrix leg.
+      # SendInput/AX landing and hotkey-while-unfocused remain §8 human checkpoints.
+      - name: Build native addon (per-OS)
         run: pnpm --filter @undertone/desktop build:native
-      - name: Smoke-load native addon (macOS)
-        if: runner.os == 'macOS'
+      - name: Smoke-load native addon (per-OS)
         run: pnpm --filter @undertone/desktop smoke:native

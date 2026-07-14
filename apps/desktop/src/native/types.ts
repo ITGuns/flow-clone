@@ -1,9 +1,15 @@
-// Desktop native boundary — CONTRACTS.md §2.3, verbatim shapes.
+// Desktop native boundary — CONTRACTS.md §2.3, verbatim shapes (this file mirrors the contract;
+// do not amend the interfaces here).
 //
 // This is the platform-agnostic seam. Everything above it (config validation, accelerator
 // parsing, event fan-out, error mapping) is unit-testable with mocks on any OS. Per-OS
-// implementations (darwin here in task 2a; win32 in task 2b) live in sibling directories and
-// satisfy `NativeModule`; the loader in ./index.ts platform-selects between them.
+// implementations — darwin (task 2a: AX API / CGEventTap) and win32 (task 2b: SendInput /
+// low-level hook) — live in sibling directories, satisfy `NativeModule`, and are platform-
+// selected at runtime by ./index.ts.
+//
+// `AppContext` is the single source of truth in @undertone/shared and is never redeclared here;
+// `ActiveAppDetector` returns everything but `register` (derived client-side via
+// packages/shared/src/register-map.ts).
 import type { AppContext } from '@undertone/shared';
 
 export interface HotkeyManager {
