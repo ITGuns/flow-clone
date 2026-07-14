@@ -1,7 +1,7 @@
 # STATUS
 
 **Product:** Undertone (codename) — cross-platform voice-to-text dictation SaaS
-**Phase:** 2 gate PASSED (in-container) → Phase 3 — Backend platform
+**Phase:** 3 gate PASSED → Phase 4 — Product surface
 **Mode:** MOCK_MODE (no external API keys present — see HUMAN_TODO.md)
 **Last updated:** 2026-07-14
 
@@ -49,8 +49,18 @@ gates block *ship*, not *build*. Every missing key is in HUMAN_TODO.md with inst
 | 2c | active-app → Register signal | ✅ merged (48 tests) | Opus 4.8 |
 | 2d | permission pre-prompt flows | ✅ merged (pre-prompt invariant tested) | Opus 4.8 |
 | Gate 2 | native merge + loader unify + CI union | ✅ **PASSED in-container** | Fable 5 |
-| 3a–3f | Backend platform | 🔄 dispatching | Opus 4.8 |
-| 4–5 | | ⬜ | |
+| 3a–3f | Backend platform | ✅ merged (zero conflicts), gate integration e2e green | Opus 4.8 |
+| Gate 3 | composition root + pipeline hooks + backend e2e | ✅ **PASSED** (643 tests: shared 155 / desktop 163 / api 325) | Fable 5 |
+| 4a–4f | Product surface | 🔄 dispatching | Opus 4.8 |
+| 5 | Hardening & ship | ⬜ | |
+
+> Gate 3 evidence: keyless e2e proves token→/me→dictionary CRUD→WS utterance→format.done→
+> usage.update→history persistence→/me usage increment, plus the quota path (transcript
+> STILL delivered, QUOTA_EXCEEDED error strictly after — never eat the user's words).
+> Real-mode composition (Clerk/Stripe/Redis/Postgres) typechecks but is unexercised until
+> keys exist (HUMAN_TODO #1–5); Drizzle repos need one live-PG integration run before real
+> deploy. Watch-item: one unreproducible golden-mock flake in a single full-suite run
+> (passed 3 consecutive re-runs; monitor in CI).
 
 > **Native code's *ship* readiness stays blocked on OS-matrix CI (HUMAN_TODO #3, GitHub remote)
 > and the two physical-machine scripts (HUMAN_TODO §12 macOS, §13 Windows).** The .mm and .cpp

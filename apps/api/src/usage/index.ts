@@ -7,11 +7,7 @@ export { weekStartMondayUtc } from './week';
 export { type RedisLike, InMemoryRedis } from './redis-like';
 export { IoRedisAdapter, createRedis } from './ioredis-adapter';
 export { UsageCounter, usageKey, USAGE_KEY_TTL_SECONDS } from './usage-counter';
-export {
-  type UsageRepo,
-  DrizzleUsageRepo,
-  FakeUsageRepo,
-} from './usage-repo';
+export { type UsageRepo, DrizzleUsageRepo, FakeUsageRepo } from './usage-repo';
 export {
   type MeterDeps,
   type MeterResult,

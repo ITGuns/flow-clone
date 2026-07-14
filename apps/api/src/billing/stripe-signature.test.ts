@@ -22,7 +22,9 @@ describe('verifyStripeSignature', () => {
 
   it('rejects a tampered body (signature no longer matches)', () => {
     const header = signStripePayload(PAYLOAD, SECRET);
-    expect(() => verifyStripeSignature(`${PAYLOAD} `, header, SECRET)).toThrow(StripeSignatureError);
+    expect(() => verifyStripeSignature(`${PAYLOAD} `, header, SECRET)).toThrow(
+      StripeSignatureError,
+    );
   });
 
   it('rejects the wrong secret', () => {
@@ -56,9 +58,7 @@ describe('verifyStripeSignature', () => {
   it('accepts a stale timestamp when tolerance is disabled (0)', () => {
     const oldTs = Math.floor(Date.now() / 1000) - 10_000;
     const header = signStripePayload(PAYLOAD, SECRET, oldTs);
-    expect(() =>
-      verifyStripeSignature(PAYLOAD, header, SECRET, { toleranceSec: 0 }),
-    ).not.toThrow();
+    expect(() => verifyStripeSignature(PAYLOAD, header, SECRET, { toleranceSec: 0 })).not.toThrow();
   });
 
   it('uses the injected clock for tolerance', () => {

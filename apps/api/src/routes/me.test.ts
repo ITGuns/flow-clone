@@ -1,11 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { UndertoneError } from '@undertone/shared';
-import {
-  InMemorySubscriptionReader,
-  InMemoryUsageReader,
-  InMemoryUserStore,
-} from '../auth/memory';
+import { InMemorySubscriptionReader, InMemoryUsageReader, InMemoryUserStore } from '../auth/memory';
 import type { Plan, UserRecord } from '../auth/ports';
 import type { Authenticator, AuthedUser } from './session-token';
 import { registerMeRoute, type MeResponse } from './me';

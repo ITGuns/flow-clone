@@ -63,7 +63,9 @@ function coerceEvent(value: unknown): StripeEvent {
   if (typeof type !== 'string') throw new StripeSignatureError('webhook event missing "type"');
   const data = root.data;
   const rawObject =
-    typeof data === 'object' && data !== null ? (data as Record<string, unknown>).object : undefined;
+    typeof data === 'object' && data !== null
+      ? (data as Record<string, unknown>).object
+      : undefined;
   return {
     id: typeof root.id === 'string' ? root.id : '',
     type,

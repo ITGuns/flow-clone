@@ -49,9 +49,9 @@ function build(overrides?: {
 describe('extractBearerToken', () => {
   it('pulls the token out of an Authorization: Bearer header (case-insensitive)', () => {
     expect(extractBearerToken(reqWithBearer('abc'))).toBe('abc');
-    expect(
-      extractBearerToken({ headers: { authorization: 'bearer XYZ' } } as FastifyRequest),
-    ).toBe('XYZ');
+    expect(extractBearerToken({ headers: { authorization: 'bearer XYZ' } } as FastifyRequest)).toBe(
+      'XYZ',
+    );
   });
 
   it('returns undefined when the header is missing or malformed', () => {
@@ -134,7 +134,10 @@ describe('ClerkAuthenticator.authenticate', () => {
       createdAt: new Date('2025-12-01T00:00:00.000Z'),
     });
     const subs = new InMemorySubscriptionReader();
-    subs.set('u-paid', { status: 'active', currentPeriodEnd: new Date('2026-12-01T00:00:00.000Z') });
+    subs.set('u-paid', {
+      status: 'active',
+      currentPeriodEnd: new Date('2026-12-01T00:00:00.000Z'),
+    });
     const { auth } = build({
       goodToken: 'tok',
       principal: { clerkId: 'clerk_paid', email: 'paid@user.com' },

@@ -22,7 +22,9 @@ export interface Win32Platform {
   activeApp: ActiveAppDetector;
 }
 
-export function createWin32Platform(binding: Win32NativeBinding = loadRealBinding()): Win32Platform {
+export function createWin32Platform(
+  binding: Win32NativeBinding = loadRealBinding(),
+): Win32Platform {
   return {
     hotkeys: new Win32HotkeyManager(binding),
     injector: new Win32TextInjector(binding),

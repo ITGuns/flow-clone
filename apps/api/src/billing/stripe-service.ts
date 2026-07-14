@@ -54,7 +54,9 @@ function str(obj: Record<string, unknown>, key: string): string | undefined {
 
 function record(obj: Record<string, unknown>, key: string): Record<string, unknown> | undefined {
   const value = obj[key];
-  return typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : undefined;
+  return typeof value === 'object' && value !== null
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
 
 /** First `items.data[0]` entry of a Stripe subscription, if present. */
@@ -63,7 +65,9 @@ function firstItem(subscription: Record<string, unknown>): Record<string, unknow
   const data = items?.data;
   if (!Array.isArray(data)) return undefined;
   const first: unknown = data[0];
-  return typeof first === 'object' && first !== null ? (first as Record<string, unknown>) : undefined;
+  return typeof first === 'object' && first !== null
+    ? (first as Record<string, unknown>)
+    : undefined;
 }
 
 /** `current_period_end` (unix seconds) → Date, checking the top level then the first item. */

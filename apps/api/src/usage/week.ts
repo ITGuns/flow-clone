@@ -12,9 +12,7 @@
  */
 export function weekStartMondayUtc(now: Date): string {
   // Collapse to UTC midnight of the input's calendar day.
-  const midnight = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   // getUTCDay(): 0=Sun … 6=Sat. Days since Monday = (day + 6) % 7 (Mon→0 … Sun→6).
   const daysSinceMonday = (midnight.getUTCDay() + 6) % 7;
   midnight.setUTCDate(midnight.getUTCDate() - daysSinceMonday);

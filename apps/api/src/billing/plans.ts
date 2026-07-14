@@ -38,8 +38,20 @@ export interface PlanDefinition {
 
 /** The two v1 plans (§1). */
 export const PLANS: Record<PlanId, PlanDefinition> = {
-  free: { id: 'free', name: 'Free', weeklyWordLimit: WEEKLY_WORD_LIMITS.free, monthlyPriceUsd: 0, yearlyPriceUsd: 0 },
-  pro: { id: 'pro', name: 'Pro', weeklyWordLimit: WEEKLY_WORD_LIMITS.pro, monthlyPriceUsd: 12, yearlyPriceUsd: 96 },
+  free: {
+    id: 'free',
+    name: 'Free',
+    weeklyWordLimit: WEEKLY_WORD_LIMITS.free,
+    monthlyPriceUsd: 0,
+    yearlyPriceUsd: 0,
+  },
+  pro: {
+    id: 'pro',
+    name: 'Pro',
+    weeklyWordLimit: WEEKLY_WORD_LIMITS.pro,
+    monthlyPriceUsd: 12,
+    yearlyPriceUsd: 96,
+  },
 };
 
 /** The weekly word cap for a plan — the single accessor 3f/gate should call. */

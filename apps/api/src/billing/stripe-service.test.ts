@@ -33,10 +33,7 @@ function build(seed: UserRecord = USER): {
   return { service, userRepo, subRepo, stripe };
 }
 
-function subscriptionEvent(
-  type: string,
-  overrides: Record<string, unknown> = {},
-): StripeEvent {
+function subscriptionEvent(type: string, overrides: Record<string, unknown> = {}): StripeEvent {
   return {
     id: 'evt_sub',
     type,

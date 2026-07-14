@@ -3,11 +3,7 @@
 // and per-user isolation, the async Redis mirror, and mirror-failure resilience.
 import { describe, it, expect } from 'vitest';
 import { InMemoryRedis } from '../usage/redis-like';
-import {
-  DEFAULT_RATE_LIMITS,
-  RedisRateLimiter,
-  type RateLimitConfig,
-} from './redis-rate-limiter';
+import { DEFAULT_RATE_LIMITS, RedisRateLimiter, type RateLimitConfig } from './redis-rate-limiter';
 
 /** A tight config so drain/refill is testable in a few calls. */
 const TIGHT: RateLimitConfig = {

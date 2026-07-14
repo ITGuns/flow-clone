@@ -174,7 +174,10 @@ describe('POST /v1/webhooks/stripe (§5)', () => {
 describe('POST /v1/billing/checkout (additive — not in §5)', () => {
   let app: FastifyInstance;
 
-  async function boot(deps: { service: StripeService; authenticator: Authenticator }): Promise<void> {
+  async function boot(deps: {
+    service: StripeService;
+    authenticator: Authenticator;
+  }): Promise<void> {
     app = Fastify({ logger: false });
     registerBillingRoutes(app, deps);
     await app.ready();
@@ -183,7 +186,10 @@ describe('POST /v1/billing/checkout (additive — not in §5)', () => {
   it('200 { url } and persists stripe_customer_id for the authed user', async () => {
     const seed: UserRecord = { ...USER, stripeCustomerId: null };
     const { service, userRepo, stripe } = makeService(seed);
-    await boot({ service, authenticator: new MockAuthenticator({ userId: 'user_mock', plan: 'free' }) });
+    await boot({
+      service,
+      authenticator: new MockAuthenticator({ userId: 'user_mock', plan: 'free' }),
+    });
 
     const res = await app.inject({
       method: 'POST',
@@ -200,7 +206,10 @@ describe('POST /v1/billing/checkout (additive — not in §5)', () => {
 
   it('400 on a missing/invalid interval', async () => {
     const { service } = makeService();
-    await boot({ service, authenticator: new MockAuthenticator({ userId: 'user_mock', plan: 'free' }) });
+    await boot({
+      service,
+      authenticator: new MockAuthenticator({ userId: 'user_mock', plan: 'free' }),
+    });
 
     const res = await app.inject({
       method: 'POST',

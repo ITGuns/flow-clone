@@ -21,11 +21,11 @@ export {
   planLimit,
 } from './effective-plan';
 export { syncUser } from './sync-user';
-export { ClerkAuthenticator, extractBearerToken, type ClerkAuthenticatorDeps } from './clerk-authenticator';
+export {
+  ClerkAuthenticator,
+  extractBearerToken,
+  type ClerkAuthenticatorDeps,
+} from './clerk-authenticator';
 export { ClerkBackendVerifier, type ClerkBackendVerifierOptions } from './clerk-verifier';
 export { DrizzleUserStore } from './user-store';
-export {
-  InMemorySubscriptionReader,
-  InMemoryUsageReader,
-  InMemoryUserStore,
-} from './memory';
+export { InMemorySubscriptionReader, InMemoryUsageReader, InMemoryUserStore } from './memory';

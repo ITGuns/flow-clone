@@ -104,3 +104,32 @@ marks monotonic and plumbed end-to-end; spine overhead beyond injected mock dela
 single-digit ms. Real-mode gate (live Deepgram + Haiku p50/p95) remains blocked on keys —
 blocks ship, not build. Phases 2 (native) proceeds; 3 (backend) after 2 merges, per the
 guide's sequential-phase discipline.
+
+## 2026-07-15 - D-017: Phase 3 zero-conflict merge; plan constants unified into billing/plans.ts
+Five parallel backend tasks merged onto main with no conflicts - the "nobody touches
+index.ts/pipeline.ts/gateway.ts, expose ports instead" rule worked. The known cost (plan
+limits duplicated 3x across auth/usage/billing) was reconciled at the gate: billing/plans.ts
+is the single source; auth/effective-plan.ts and usage/limits.ts are re-export shims.
+
+## 2026-07-15 - D-018: CONTRACTS 1 FormatRequest.dictionary reading ratified
+The pipeline runs shared filterDictionary(fullList, transcript) BEFORE building FormatRequest,
+so the field is "already capped/filtered per 6" exactly as CONTRACTS 1 states, and mock/real
+formatter paths receive identical input. HaikuFormatter's internal re-filter is idempotent on
+a capped set. Gate-3 agent's reading confirmed correct.
+
+## 2026-07-15 - D-019: Effective plan is stamped into the session JWT claim
+ClerkAuthenticator computes effectivePlan(user, sub, now) at token issuance; the WS pipeline
+meters against the connection-bound plan claim with no server-side re-derivation. Consequence:
+a mid-session plan change applies on next token refresh (<=60s token expiry), not instantly.
+Acceptable for v1; documented.
+
+## 2026-07-15 - D-020: Quota + persistence failure semantics in the pipeline
+format.done (the user's words) is ALWAYS delivered first; QUOTA_EXCEEDED error frame follows
+when metering reports exceeded. persist/meter/dictionary hook failures degrade silently
+(format.done still delivered; no transcript content in logs, guide 3 telemetry rule).
+
+## 2026-07-15 - D-021: Prettier baseline swept; drizzle output ignored; golden-mock flake watch
+Repo-wide prettier --write applied (18 files, whitespace only); apps/api/drizzle/ added to
+.prettierignore (generated SQL/meta). One golden-mock test failure observed ONCE during a full
+-r run immediately after the sweep; unreproducible across 3 re-runs and not correlated with
+any golden/mock file change. Watch in CI; if it recurs, investigate fixture-load fs timing.

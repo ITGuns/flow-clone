@@ -106,8 +106,10 @@ export function registerBillingRoutes(app: FastifyInstance, deps: BillingRoutesD
       const result = await deps.service.createCheckout({
         userId: user.userId,
         interval,
-        successUrl: typeof body.successUrl === 'string' ? body.successUrl : DEFAULT_CHECKOUT_SUCCESS_URL,
-        cancelUrl: typeof body.cancelUrl === 'string' ? body.cancelUrl : DEFAULT_CHECKOUT_CANCEL_URL,
+        successUrl:
+          typeof body.successUrl === 'string' ? body.successUrl : DEFAULT_CHECKOUT_SUCCESS_URL,
+        cancelUrl:
+          typeof body.cancelUrl === 'string' ? body.cancelUrl : DEFAULT_CHECKOUT_CANCEL_URL,
       });
       void reply.status(200).send({ url: result.url });
     },

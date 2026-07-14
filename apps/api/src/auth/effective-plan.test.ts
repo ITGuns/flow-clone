@@ -84,7 +84,9 @@ describe('effectivePlan (trial-expiry / subscription derivation)', () => {
 
   it("stored 'pro', trial expired, but an active paid sub → pro", () => {
     const sub: SubscriptionRecord = { status: 'active', currentPeriodEnd: daysFromNow(20) };
-    expect(effectivePlan(user({ plan: 'pro', trialEndsAt: daysFromNow(-5) }), sub, NOW)).toBe('pro');
+    expect(effectivePlan(user({ plan: 'pro', trialEndsAt: daysFromNow(-5) }), sub, NOW)).toBe(
+      'pro',
+    );
   });
 
   it("stored 'pro', trial expired, sub present but expired → free", () => {

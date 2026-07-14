@@ -41,7 +41,9 @@ describe('buildAppContext — windowTitle hardening', () => {
   });
 
   it('leaves a normal-length windowTitle unchanged', () => {
-    const ctx = buildAppContext(raw({ bundleId: 'notepad.exe', windowTitle: 'Untitled - Notepad' }));
+    const ctx = buildAppContext(
+      raw({ bundleId: 'notepad.exe', windowTitle: 'Untitled - Notepad' }),
+    );
     expect(ctx.windowTitle).toBe('Untitled - Notepad');
   });
 
