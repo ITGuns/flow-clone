@@ -10,3 +10,5 @@ export * from './golden';
 export * from './mock-asr';
 export * from './dict-filter';
 export * from './mock-formatter';
+export * from './register-map';
+export * from './app-context';
