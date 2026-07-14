@@ -27,10 +27,19 @@ Check this file whenever you return to the run.
 ### 4. Clerk account (auth)
 - https://dashboard.clerk.com → create application → copy publishable + secret keys to
   `apps/api/.env` (`CLERK_SECRET_KEY`) and `apps/desktop/.env` (`CLERK_PUBLISHABLE_KEY`).
+- **REQUIRED (task 3a):** in the Clerk dashboard, edit the session token template and add
+  `{"email": "{{user.primary_email_address}}"}` — the API reads the email from this claim
+  (single-step verification, no per-auth network call). Without it, real-mode auth throws a
+  descriptive error.
 
 ### 5. Stripe account, test mode (billing)
 - https://dashboard.stripe.com → test mode → `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`.
-- Products will be created by script in Phase 3 (Pro $12/mo, $96/yr per guide §1 defaults).
+- **Create the Pro product with two prices (task 3e):** $12/month and $96/year (guide §1).
+  Copy the two price IDs into `apps/api/.env` as `STRIPE_PRICE_PRO_MONTHLY` and
+  `STRIPE_PRICE_PRO_YEARLY`. Mock mode uses placeholders until then.
+- Point a test-mode webhook endpoint at `POST /v1/webhooks/stripe` (events:
+  checkout.session.completed, customer.subscription.updated, customer.subscription.deleted)
+  and copy its signing secret to `STRIPE_WEBHOOK_SECRET`.
 
 ## Blocking Phase 5 (deploy + ship)
 

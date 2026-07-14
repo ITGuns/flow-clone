@@ -5,7 +5,7 @@ friction is reported up to the orchestrator; the orchestrator amends; affected t
 re-dispatch. All types below live in `packages/shared/src/` and are imported — never
 redeclared — by `apps/api` and `apps/desktop`.
 
-Version: 1.2.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
+Version: 1.3.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
 References to "guide §…" mean `docs/BUILD_GUIDE.md`.
 
 ## 1. Core domain types (`packages/shared/src/types.ts`)
@@ -188,7 +188,7 @@ Server → client:
 | `GET /v1/me` | – | `{ userId, email, plan, trialEndsAt, usage: { wordsThisWeek, limit } }` | 401 |
 | `GET /v1/dictionary` | – | `{ entries: DictionaryEntry[] }` | 401 |
 | `POST /v1/dictionary` | `{ phrase, soundsLike? }` | `DictionaryEntry` | 400, 401, 409 (dup phrase), 422 (>500 entries total) |
-| `PATCH /v1/dictionary/:id` | partial entry | `DictionaryEntry` | 400, 401, 404 |
+| `PATCH /v1/dictionary/:id` | partial entry | `DictionaryEntry` | 400, 401, 404, 409 (rename collides with existing phrase — forced by the UNIQUE(user_id, lower(phrase)) index; v1.3.0) |
 | `DELETE /v1/dictionary/:id` | – | `{ ok: true }` | 401, 404 |
 | `GET /v1/history?q=&cursor=&limit=` | – | `{ items: HistoryItem[], nextCursor? }` | 401 |
 | `DELETE /v1/history/:id` | – | `{ ok: true }` | 401, 404 |
@@ -285,6 +285,8 @@ CLERK_SECRET_KEY=
 CLERK_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_PRO_MONTHLY=  # Stripe price ID, Pro $12/mo; mock placeholder in code (v1.3.0)
+STRIPE_PRICE_PRO_YEARLY=   # Stripe price ID, Pro $96/yr; mock placeholder in code (v1.3.0)
 TRANSCRIPT_KEY=            # base64 32B; dev default generated into .env by scaffold
 TOKEN_INDEX_KEY=           # base64 32B; distinct from TRANSCRIPT_KEY
 SESSION_JWT_SECRET=        # HS256 secret for WS session tokens (§4.1); mock default in code
