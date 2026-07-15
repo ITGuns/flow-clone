@@ -55,7 +55,7 @@ Check this file whenever you return to the run.
 - "Undertone" (`com.yourco.undertone`) is a placeholder used consistently; renaming is a
   find-replace. Shipping requires a real name + trademark search.
 
-### 11. Counsel review of privacy policy + ToS (drafted in Phase 4)
+### 11. ~~Counsel review of privacy policy + ToS~~ — superseded by #14 (drafts now exist in docs/legal/)
 
 ---
 *Physical-machine test scripts will be appended here by the orchestrator as Phase 2+ tasks

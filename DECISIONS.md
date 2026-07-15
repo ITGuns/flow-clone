@@ -133,3 +133,21 @@ Repo-wide prettier --write applied (18 files, whitespace only); apps/api/drizzle
 .prettierignore (generated SQL/meta). One golden-mock test failure observed ONCE during a full
 -r run immediately after the sweep; unreproducible across 3 re-runs and not correlated with
 any golden/mock file change. Watch in CI; if it recurs, investigate fixture-load fs timing.
+
+## 2026-07-15 - D-022: apps/marketing added as a fourth workspace
+Guide 4.1 lists three workspaces; task 4e (marketing site) needs a home. Static Vite site,
+zero runtime deps, builds to plain files. apps/* glob covers it; pnpm -r stays green.
+
+## 2026-07-15 - D-023: USER SCOPE OVERRIDE - web dashboard replaces download CTAs for now
+User (2026-07-15): native toolchain install declined ("too hustle"); directive = make the
+WEBSITE the working product: remove download buttons, add a proceed button into a dashboard
+where dictation works in the browser. This overrides the guide's "no web dashboard in v1".
+New task 4h: apps/web dashboard (browser mic capture -> WS streaming -> live partials ->
+formatted text + copy; history; usage), marketing CTAs repointed. Desktop work already built
+(4a-4g) is kept - it remains the long-term product; only its local-native verification is
+deprioritized.
+
+## 2026-07-15 - D-024: Task 4a (HUD) interrupted by account session limit - deferred
+The 4a agent died mid-task on an API session-limit error with uncommitted work in
+.worktrees/4a (Electron screenshot harness debugging). Worktree + branch task/4a preserved
+untouched for resume. With D-023 the HUD is not on the critical path; resume after 4h.

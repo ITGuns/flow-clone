@@ -51,7 +51,8 @@ gates block *ship*, not *build*. Every missing key is in HUMAN_TODO.md with inst
 | Gate 2 | native merge + loader unify + CI union | ✅ **PASSED in-container** | Fable 5 |
 | 3a–3f | Backend platform | ✅ merged (zero conflicts), gate integration e2e green | Opus 4.8 |
 | Gate 3 | composition root + pipeline hooks + backend e2e | ✅ **PASSED** (643 tests: shared 155 / desktop 163 / api 325) | Fable 5 |
-| 4a–4f | Product surface | 🔄 dispatching | Opus 4.8 |
+| 4a/4b/4c/4e/4f/4g | Product surface wave 1 (4g = session orchestrator, added task) | 🔄 in flight | Opus 4.8 |
+| 4d | Onboarding (wave 2 — needs 4g) | ⬜ | Opus 4.8 |
 | 5 | Hardening & ship | ⬜ | |
 
 > Gate 3 evidence: keyless e2e proves token→/me→dictionary CRUD→WS utterance→format.done→
