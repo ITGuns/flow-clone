@@ -14,9 +14,7 @@ async function toggle(el: Element): Promise<void> {
 
 describe('PreferencesPanel', () => {
   it('states the privacy posture in plain language (guide §3)', async () => {
-    const view = await mount(
-      <PreferencesPanel settings={DEFAULT_SETTINGS} onChange={() => {}} />,
-    );
+    const view = await mount(<PreferencesPanel settings={DEFAULT_SETTINGS} onChange={() => {}} />);
     expect(view.container.textContent).toContain('never what you say');
     await view.unmount();
   });
@@ -24,7 +22,10 @@ describe('PreferencesPanel', () => {
   it('reflects telemetry ON by default and emits an opt-OUT patch when toggled off', async () => {
     const onChange = vi.fn();
     const view = await mount(
-      <PreferencesPanel settings={{ ...DEFAULT_SETTINGS, telemetryEnabled: true }} onChange={onChange} />,
+      <PreferencesPanel
+        settings={{ ...DEFAULT_SETTINGS, telemetryEnabled: true }}
+        onChange={onChange}
+      />,
     );
     const switches = view.container.querySelectorAll<HTMLInputElement>('input[role="switch"]');
     const telemetry = switches[0]!;
@@ -36,9 +37,7 @@ describe('PreferencesPanel', () => {
 
   it('emits a launchAtLogin patch and notes it applies later', async () => {
     const onChange = vi.fn();
-    const view = await mount(
-      <PreferencesPanel settings={DEFAULT_SETTINGS} onChange={onChange} />,
-    );
+    const view = await mount(<PreferencesPanel settings={DEFAULT_SETTINGS} onChange={onChange} />);
     expect(view.container.textContent).toMatch(/after the next install/i);
     const switches = view.container.querySelectorAll<HTMLInputElement>('input[role="switch"]');
     await toggle(switches[1]!);

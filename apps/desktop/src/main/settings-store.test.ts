@@ -35,7 +35,11 @@ describe('SettingsStore — load', () => {
   });
 
   it('coerces a partial / drifted (but valid JSON) file to defaults per-field', () => {
-    writeFileSync(file, JSON.stringify({ hotkey: 42, telemetryEnabled: 'yes', foo: 'bar' }), 'utf8');
+    writeFileSync(
+      file,
+      JSON.stringify({ hotkey: 42, telemetryEnabled: 'yes', foo: 'bar' }),
+      'utf8',
+    );
     const store = new SettingsStore({ filePath: file });
     const s = store.load();
     expect(s.hotkey).toBe(DEFAULT_HOTKEY); // wrong type → default

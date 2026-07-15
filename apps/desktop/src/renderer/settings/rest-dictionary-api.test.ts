@@ -27,7 +27,11 @@ describe('RestDictionaryApi — request shaping', () => {
     const api = new RestDictionaryApi({
       baseUrl: 'https://api.undertone.app/',
       fetch: fetchReturning(
-        { ok: true, status: 200, jsonValue: { entries: [{ id: 'x', phrase: 'K8s', soundsLike: [], createdAt: '' }] } },
+        {
+          ok: true,
+          status: 200,
+          jsonValue: { entries: [{ id: 'x', phrase: 'K8s', soundsLike: [], createdAt: '' }] },
+        },
         calls,
       ),
     });
@@ -42,7 +46,19 @@ describe('RestDictionaryApi — request shaping', () => {
     const calls: Recorded[] = [];
     const api = new RestDictionaryApi({
       baseUrl: 'https://api.undertone.app',
-      fetch: fetchReturning({ ok: true, status: 200, jsonValue: { id: 'n', phrase: 'Kubernetes', soundsLike: ['cooper netties'], createdAt: '' } }, calls),
+      fetch: fetchReturning(
+        {
+          ok: true,
+          status: 200,
+          jsonValue: {
+            id: 'n',
+            phrase: 'Kubernetes',
+            soundsLike: ['cooper netties'],
+            createdAt: '',
+          },
+        },
+        calls,
+      ),
       getToken: () => 'jwt-123',
     });
     const created = await api.create({ phrase: 'Kubernetes', soundsLike: ['cooper netties'] });
@@ -52,7 +68,10 @@ describe('RestDictionaryApi — request shaping', () => {
     expect(init.method).toBe('POST');
     expect(init.headers['content-type']).toBe('application/json');
     expect(init.headers.authorization).toBe('Bearer jwt-123');
-    expect(JSON.parse(init.body!)).toEqual({ phrase: 'Kubernetes', soundsLike: ['cooper netties'] });
+    expect(JSON.parse(init.body!)).toEqual({
+      phrase: 'Kubernetes',
+      soundsLike: ['cooper netties'],
+    });
   });
 
   it('omits soundsLike from the body when not provided', async () => {
@@ -70,7 +89,14 @@ describe('RestDictionaryApi — request shaping', () => {
     const calls: Recorded[] = [];
     const api = new RestDictionaryApi({
       baseUrl: 'https://api.undertone.app',
-      fetch: fetchReturning({ ok: true, status: 200, jsonValue: { id: 'a b', phrase: 'X', soundsLike: [], createdAt: '' } }, calls),
+      fetch: fetchReturning(
+        {
+          ok: true,
+          status: 200,
+          jsonValue: { id: 'a b', phrase: 'X', soundsLike: [], createdAt: '' },
+        },
+        calls,
+      ),
     });
     await api.update('a b', { phrase: 'X' });
     expect(calls[0]!.url).toBe('https://api.undertone.app/v1/dictionary/a%20b');

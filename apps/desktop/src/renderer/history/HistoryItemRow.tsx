@@ -70,11 +70,7 @@ export function HistoryItemRow({ item, now, onDelete }: HistoryItemRowProps): Re
             >
               Delete
             </button>
-            <button
-              type="button"
-              className="uth-btn uth-btn-sm"
-              onClick={() => setMode('idle')}
-            >
+            <button type="button" className="uth-btn uth-btn-sm" onClick={() => setMode('idle')}>
               Cancel
             </button>
           </span>
@@ -97,11 +93,7 @@ export function HistoryItemRow({ item, now, onDelete }: HistoryItemRowProps): Re
             >
               Try again
             </button>
-            <button
-              type="button"
-              className="uth-btn uth-btn-sm"
-              onClick={() => setMode('idle')}
-            >
+            <button type="button" className="uth-btn uth-btn-sm" onClick={() => setMode('idle')}>
               Cancel
             </button>
           </span>

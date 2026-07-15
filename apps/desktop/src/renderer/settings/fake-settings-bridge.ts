@@ -1,7 +1,12 @@
 // In-memory SettingsBridge for the Settings UI tests (task 4c). Not a `.test` file, so it is
 // typechecked/linted with the sources but never run as a suite. Holds a mutable settings blob,
 // records every patch, and lets a test push an out-of-band change to exercise `subscribe`.
-import { DEFAULT_SETTINGS, applyPatch, type Settings, type SettingsPatch } from '../../settings-schema';
+import {
+  DEFAULT_SETTINGS,
+  applyPatch,
+  type Settings,
+  type SettingsPatch,
+} from '../../settings-schema';
 import type { SettingsBridge } from './settings-bridge';
 
 export class FakeSettingsBridge implements SettingsBridge {

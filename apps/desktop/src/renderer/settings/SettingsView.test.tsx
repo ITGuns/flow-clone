@@ -60,7 +60,9 @@ describe('SettingsView — telemetry round-trips through the bridge', () => {
     });
     await flush();
     await act(async () => {
-      recordBtn.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'F9' }));
+      recordBtn.dispatchEvent(
+        new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'F9' }),
+      );
     });
     await flush();
 

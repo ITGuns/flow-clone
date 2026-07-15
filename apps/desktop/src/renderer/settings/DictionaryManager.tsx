@@ -5,11 +5,7 @@
 // tests in jsdom against `FakeDictionaryApi` with no network.
 import { useCallback, useEffect, useId, useState, type ReactElement } from 'react';
 import type { DictionaryEntry } from '@undertone/shared';
-import {
-  DictionaryApiError,
-  dictionaryErrorMessage,
-  type DictionaryApi,
-} from './dictionary-api';
+import { DictionaryApiError, dictionaryErrorMessage, type DictionaryApi } from './dictionary-api';
 import { TagInput } from './TagInput';
 
 export interface DictionaryManagerProps {
@@ -131,7 +127,11 @@ export function DictionaryManager({ api }: DictionaryManagerProps): ReactElement
           </p>
         ) : null}
         <div className="uts-actions">
-          <button type="submit" className="uts-btn uts-btn-primary" disabled={busy || phrase.trim() === ''}>
+          <button
+            type="submit"
+            className="uts-btn uts-btn-primary"
+            disabled={busy || phrase.trim() === ''}
+          >
             {busy ? <span className="uts-spinner" aria-hidden="true" /> : null}
             Add entry
           </button>
@@ -167,7 +167,9 @@ export function DictionaryManager({ api }: DictionaryManagerProps): ReactElement
                 <div className="uts-row-main">
                   <div className="uts-entry-phrase">{entry.phrase}</div>
                   {entry.soundsLike.length > 0 ? (
-                    <div className="uts-entry-sounds">Sounds like: {entry.soundsLike.join(', ')}</div>
+                    <div className="uts-entry-sounds">
+                      Sounds like: {entry.soundsLike.join(', ')}
+                    </div>
                   ) : null}
                 </div>
                 <div className="uts-actions">

@@ -12,10 +12,7 @@ function entry(phrase: string, soundsLike: string[] = []): DictionaryEntry {
 
 /** Set a controlled input's value the way React expects, then flush. */
 async function typeInto(input: HTMLInputElement, value: string): Promise<void> {
-  const setter = Object.getOwnPropertyDescriptor(
-    HTMLInputElement.prototype,
-    'value',
-  )?.set;
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
   await act(async () => {
     setter?.call(input, value);
     input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -25,7 +22,9 @@ async function typeInto(input: HTMLInputElement, value: string): Promise<void> {
 
 async function pressEnter(el: Element): Promise<void> {
   await act(async () => {
-    el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' }));
+    el.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' }),
+    );
   });
   await flush();
 }

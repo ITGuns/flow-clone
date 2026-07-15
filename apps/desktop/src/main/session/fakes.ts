@@ -2,7 +2,13 @@
 // compiled/linted with the sources but never run as a suite. Each fake is the minimal structural
 // implementation of a port from ports.ts, plus test controls to drive it and inspect what the
 // orchestrator did.
-import { UndertoneError, toErrorMessage, type ClientMessage, type ErrorCode, type UtteranceId } from '@undertone/shared';
+import {
+  UndertoneError,
+  toErrorMessage,
+  type ClientMessage,
+  type ErrorCode,
+  type UtteranceId,
+} from '@undertone/shared';
 import { TypedEmitter, type ConnectionState, type WsClientEventMap } from '../../ws';
 import type { InjectResult } from '../../native';
 import type { HudState } from '../../ipc-contract';

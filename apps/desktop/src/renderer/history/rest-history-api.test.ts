@@ -1,14 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import {
-  RestHistoryApi,
-  HistoryApiError,
-  type FetchFn,
-  type TokenProvider,
-} from '../history';
+import { RestHistoryApi, HistoryApiError, type FetchFn, type TokenProvider } from '../history';
 import { makeSeries } from './test-fixtures';
 
 /** Records every request and replays a queue of canned responses. */
-function recorder(responses: Response[]): { fetch: FetchFn; calls: { url: string; init?: RequestInit }[] } {
+function recorder(responses: Response[]): {
+  fetch: FetchFn;
+  calls: { url: string; init?: RequestInit }[];
+} {
   const calls: { url: string; init?: RequestInit }[] = [];
   let i = 0;
   const fetch: FetchFn = (url, init) => {
@@ -37,7 +35,11 @@ function authOf(init?: RequestInit): string | undefined {
 describe('RestHistoryApi.list — request shaping', () => {
   it('GETs /v1/history with the bearer and no query when params are empty', async () => {
     const { fetch, calls } = recorder([json({ items: [] })]);
-    const api = new RestHistoryApi({ baseUrl: 'https://api.undertone.app', tokenProvider: token, fetch });
+    const api = new RestHistoryApi({
+      baseUrl: 'https://api.undertone.app',
+      tokenProvider: token,
+      fetch,
+    });
     await api.list();
     expect(calls[0]?.url).toBe('https://api.undertone.app/v1/history');
     expect(calls[0]?.init?.method).toBe('GET');
@@ -46,7 +48,11 @@ describe('RestHistoryApi.list — request shaping', () => {
 
   it('encodes q, cursor and limit into the querystring, omitting empties', async () => {
     const { fetch, calls } = recorder([json({ items: [] })]);
-    const api = new RestHistoryApi({ baseUrl: 'https://api.undertone.app', tokenProvider: token, fetch });
+    const api = new RestHistoryApi({
+      baseUrl: 'https://api.undertone.app',
+      tokenProvider: token,
+      fetch,
+    });
     await api.list({ q: 'hello world', cursor: 'CUR==', limit: 10 });
     const url = calls[0]?.url ?? '';
     expect(url.startsWith('https://api.undertone.app/v1/history?')).toBe(true);
@@ -57,14 +63,22 @@ describe('RestHistoryApi.list — request shaping', () => {
 
   it('omits an empty q/cursor rather than sending blank params', async () => {
     const { fetch, calls } = recorder([json({ items: [] })]);
-    const api = new RestHistoryApi({ baseUrl: 'https://api.undertone.app', tokenProvider: token, fetch });
+    const api = new RestHistoryApi({
+      baseUrl: 'https://api.undertone.app',
+      tokenProvider: token,
+      fetch,
+    });
     await api.list({ q: '', cursor: '' });
     expect(calls[0]?.url).toBe('https://api.undertone.app/v1/history');
   });
 
   it('strips a trailing slash on baseUrl', async () => {
     const { fetch, calls } = recorder([json({ items: [] })]);
-    const api = new RestHistoryApi({ baseUrl: 'https://api.undertone.app/', tokenProvider: token, fetch });
+    const api = new RestHistoryApi({
+      baseUrl: 'https://api.undertone.app/',
+      tokenProvider: token,
+      fetch,
+    });
     await api.list();
     expect(calls[0]?.url).toBe('https://api.undertone.app/v1/history');
   });
@@ -72,11 +86,19 @@ describe('RestHistoryApi.list — request shaping', () => {
   it('parses items and nextCursor, and omits nextCursor when absent', async () => {
     const items = makeSeries(2);
     const withCursor = recorder([json({ items, nextCursor: 'NEXT' })]);
-    const a = new RestHistoryApi({ baseUrl: 'https://x', tokenProvider: token, fetch: withCursor.fetch });
+    const a = new RestHistoryApi({
+      baseUrl: 'https://x',
+      tokenProvider: token,
+      fetch: withCursor.fetch,
+    });
     expect(await a.list()).toEqual({ items, nextCursor: 'NEXT' });
 
     const noCursor = recorder([json({ items })]);
-    const b = new RestHistoryApi({ baseUrl: 'https://x', tokenProvider: token, fetch: noCursor.fetch });
+    const b = new RestHistoryApi({
+      baseUrl: 'https://x',
+      tokenProvider: token,
+      fetch: noCursor.fetch,
+    });
     expect(await b.list()).toEqual({ items });
   });
 });

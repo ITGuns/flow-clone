@@ -34,7 +34,8 @@ createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', `http://localhost:${port}`);
   // Resolve inside root only (normalize strips ../ traversal).
   let pathname = normalize(decodeURIComponent(url.pathname)).replace(/^([/\\])+/, '');
-  if (pathname === '' || pathname.endsWith('/') || pathname.endsWith('\\')) pathname += 'index.html';
+  if (pathname === '' || pathname.endsWith('/') || pathname.endsWith('\\'))
+    pathname += 'index.html';
 
   let file = join(root, pathname);
   if (!file.startsWith(root)) {
@@ -44,7 +45,8 @@ createServer(async (req, res) => {
 
   let body = await tryRead(file);
   if (body === null && !extname(pathname)) body = await tryRead(join(root, pathname, 'index.html'));
-  if (body === null && pathname.startsWith('app')) body = await tryRead(join(root, 'app', 'index.html'));
+  if (body === null && pathname.startsWith('app'))
+    body = await tryRead(join(root, 'app', 'index.html'));
   if (body === null) {
     res.writeHead(404, { 'content-type': 'text/plain' }).end('not found');
     return;

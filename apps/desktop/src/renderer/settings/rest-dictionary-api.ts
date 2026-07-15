@@ -84,11 +84,7 @@ export class RestDictionaryApi implements DictionaryApi {
     if (!res.ok) throw this.toError(res);
   }
 
-  private async request(
-    method: string,
-    path: string,
-    body?: unknown,
-  ): Promise<FetchResponse> {
+  private async request(method: string, path: string, body?: unknown): Promise<FetchResponse> {
     const headers: Record<string, string> = { accept: 'application/json' };
     const token = this.getToken();
     if (token !== null) headers.authorization = `Bearer ${token}`;
@@ -114,6 +110,10 @@ export class RestDictionaryApi implements DictionaryApi {
   }
 
   private toError(res: FetchResponse): DictionaryApiError {
-    return new DictionaryApiError(statusToKind(res.status), `request failed (${res.status})`, res.status);
+    return new DictionaryApiError(
+      statusToKind(res.status),
+      `request failed (${res.status})`,
+      res.status,
+    );
   }
 }

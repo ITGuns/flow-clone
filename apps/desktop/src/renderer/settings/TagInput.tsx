@@ -12,7 +12,13 @@ export interface TagInputProps {
   inputId?: string;
 }
 
-export function TagInput({ value, onChange, label, placeholder, inputId }: TagInputProps): ReactElement {
+export function TagInput({
+  value,
+  onChange,
+  label,
+  placeholder,
+  inputId,
+}: TagInputProps): ReactElement {
   const [draft, setDraft] = useState('');
   const generatedId = useId();
   const id = inputId ?? generatedId;

@@ -17,7 +17,10 @@ export function makeItem(over: Partial<HistoryItem> & { id: string }): HistoryIt
 }
 
 /** N items with strictly descending timestamps (newest = index 0), ids i0..i{N-1}. */
-export function makeSeries(n: number, textFor: (i: number) => string = (i) => `note ${i}`): HistoryItem[] {
+export function makeSeries(
+  n: number,
+  textFor: (i: number) => string = (i) => `note ${i}`,
+): HistoryItem[] {
   const base = Date.parse('2026-07-15T12:00:00.000Z');
   return Array.from({ length: n }, (_, i) =>
     makeItem({

@@ -320,7 +320,8 @@ export class SessionOrchestrator {
 
   private handleFrame(uid: UtteranceId, frame: Uint8Array): void {
     if (uid !== this.activeUtteranceId || this.audioEndSent) return;
-    if (this.state === 'arming') this.state = 'listening'; // arming → listening on first frame
+    if (this.state === 'arming')
+      this.state = 'listening'; // arming → listening on first frame
     else if (this.state !== 'listening' && this.state !== 'finalizing') return;
     // The WsClient owns frameSeq (§4.2) and the replay ring; it assigns 0,1,2,… as we hand it
     // payloads, in lockstep with the capture stream. We track only the count of ACCEPTED frames so
@@ -364,7 +365,11 @@ export class SessionOrchestrator {
     }
     if (this.activeUtteranceId !== uid) return; // superseded by an error while stopping
     this.audioEndSent = true;
-    this.ports.ws.sendControl({ t: 'audio.end', utteranceId: uid, lastFrameSeq: this.framesSent - 1 });
+    this.ports.ws.sendControl({
+      t: 'audio.end',
+      utteranceId: uid,
+      lastFrameSeq: this.framesSent - 1,
+    });
   }
 
   // ── WS server events ───────────────────────────────────────────────────────────────────────
@@ -486,7 +491,11 @@ export class SessionOrchestrator {
     const code = msg.code;
     if (RAW_FALLBACK_CODES.has(code)) {
       // The accompanying raw format.done does the injection; just remember the flavor to show.
-      if (this.state === 'finalizing' || this.state === 'formatting' || this.state === 'injecting') {
+      if (
+        this.state === 'finalizing' ||
+        this.state === 'formatting' ||
+        this.state === 'injecting'
+      ) {
         this.pendingFallbackCode = code;
       }
       return;

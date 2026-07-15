@@ -5,18 +5,8 @@
 import { describe, expect, it } from 'vitest';
 import { AudioCapture } from '../../audio';
 import { WsClient } from '../../ws';
-import type {
-  ActiveAppDetector,
-  HotkeyManager,
-  TextInjector,
-} from '../../native';
-import type {
-  AppDetectPort,
-  CapturePort,
-  HotkeyPort,
-  InjectPort,
-  WsPort,
-} from './ports';
+import type { ActiveAppDetector, HotkeyManager, TextInjector } from '../../native';
+import type { AppDetectPort, CapturePort, HotkeyPort, InjectPort, WsPort } from './ports';
 
 const asHotkey = (x: HotkeyManager): HotkeyPort => x;
 const asCapture = (x: AudioCapture): CapturePort => x;
@@ -26,8 +16,8 @@ const asAppDetect = (x: ActiveAppDetector): AppDetectPort => x;
 
 describe('port conformance (types only)', () => {
   it('real classes/interfaces are assignable to the narrow ports', () => {
-    expect([asHotkey, asCapture, asWs, asInject, asAppDetect].every((f) => typeof f === 'function')).toBe(
-      true,
-    );
+    expect(
+      [asHotkey, asCapture, asWs, asInject, asAppDetect].every((f) => typeof f === 'function'),
+    ).toBe(true);
   });
 });

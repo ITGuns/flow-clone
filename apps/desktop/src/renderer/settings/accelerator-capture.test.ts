@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { acceleratorFromEvent, describeHotkeyConflict, type KeyLikeEvent } from './accelerator-capture';
+import {
+  acceleratorFromEvent,
+  describeHotkeyConflict,
+  type KeyLikeEvent,
+} from './accelerator-capture';
 
 function ev(partial: Partial<KeyLikeEvent> & { key: string }): KeyLikeEvent {
   return {
@@ -25,9 +29,9 @@ describe('acceleratorFromEvent', () => {
 
   it('uppercases letters and joins modifiers in canonical order', () => {
     expect(acceleratorFromEvent(ev({ key: 'k' }))).toBe('K');
-    expect(
-      acceleratorFromEvent(ev({ key: 'k', ctrlKey: true, shiftKey: true })),
-    ).toBe('Control+Shift+K');
+    expect(acceleratorFromEvent(ev({ key: 'k', ctrlKey: true, shiftKey: true }))).toBe(
+      'Control+Shift+K',
+    );
     expect(acceleratorFromEvent(ev({ key: ' ', altKey: true }))).toBe('Alt+Space');
   });
 

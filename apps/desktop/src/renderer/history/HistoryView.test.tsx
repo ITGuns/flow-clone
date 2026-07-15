@@ -3,7 +3,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act } from 'react';
 import { HistoryView } from '../history';
 import { FakeHistoryApi, HistoryApiError } from '../history';
-import { mount, click, typeInto, flush, buttonByText, findButtonByText, query, queryAll } from './dom-harness';
+import {
+  mount,
+  click,
+  typeInto,
+  flush,
+  buttonByText,
+  findButtonByText,
+  query,
+  queryAll,
+} from './dom-harness';
 import { makeItem, makeSeries } from './test-fixtures';
 
 const NOW = new Date('2026-07-15T12:00:00.000Z');
@@ -33,7 +42,13 @@ function searchBox(container: HTMLElement): HTMLInputElement {
 describe('HistoryView — initial load + empty states', () => {
   it('renders rows for existing history with app name, register badge and word count', async () => {
     const api = new FakeHistoryApi([
-      makeItem({ id: 'a', text: 'ship it today', appName: 'Slack', register: 'chat', wordCount: 3 }),
+      makeItem({
+        id: 'a',
+        text: 'ship it today',
+        appName: 'Slack',
+        register: 'chat',
+        wordCount: 3,
+      }),
     ]);
     const view = await mount(<HistoryView api={api} now={NOW} />);
     await flush();
@@ -83,7 +98,9 @@ describe('HistoryView — debounced search', () => {
   });
 
   it('coalesces rapid keystrokes into a single settle (timer resets on change)', async () => {
-    const api = new FakeHistoryApi(makeSeries(4, (i) => (i === 0 ? 'unique needle' : `filler ${i}`)));
+    const api = new FakeHistoryApi(
+      makeSeries(4, (i) => (i === 0 ? 'unique needle' : `filler ${i}`)),
+    );
     const view = await mount(<HistoryView api={api} now={NOW} />);
     await flush();
 
@@ -140,7 +157,7 @@ describe('HistoryView — per-item delete', () => {
     const firstRow = query(view.container, '.uth-row');
     await click(buttonByText(firstRow, 'Delete')); // opens confirm
     // confirm affordance visible
-    expect((firstRow.textContent ?? '')).toContain('Delete this?');
+    expect(firstRow.textContent ?? '').toContain('Delete this?');
     await click(buttonByText(firstRow, 'Delete')); // the danger confirm
 
     expect(removeSpy).toHaveBeenCalledWith('i0');
@@ -165,14 +182,16 @@ describe('HistoryView — per-item delete', () => {
 
   it('a failing delete shows an inline retryable error and keeps the row', async () => {
     const api = new FakeHistoryApi(makeSeries(2));
-    vi.spyOn(api, 'remove').mockRejectedValue(new HistoryApiError('server', 'nope', { status: 500 }));
+    vi.spyOn(api, 'remove').mockRejectedValue(
+      new HistoryApiError('server', 'nope', { status: 500 }),
+    );
     const view = await mount(<HistoryView api={api} now={NOW} />);
     await flush();
 
     const firstRow = query(view.container, '.uth-row');
     await click(buttonByText(firstRow, 'Delete'));
     await click(buttonByText(firstRow, 'Delete'));
-    expect((firstRow.textContent ?? '')).toContain('Couldn’t delete');
+    expect(firstRow.textContent ?? '').toContain('Couldn’t delete');
     expect(buttonByText(firstRow, 'Try again')).toBeTruthy();
     expect(rowCount(view.container)).toBe(2);
     await view.unmount();

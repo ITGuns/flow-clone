@@ -36,13 +36,7 @@ export interface DictionaryApi {
  * - `unknown`      any other status.
  */
 export type DictionaryErrorKind =
-  | 'duplicate'
-  | 'cap'
-  | 'not-found'
-  | 'bad-request'
-  | 'unauthorized'
-  | 'network'
-  | 'unknown';
+  'duplicate' | 'cap' | 'not-found' | 'bad-request' | 'unauthorized' | 'network' | 'unknown';
 
 export class DictionaryApiError extends Error {
   readonly kind: DictionaryErrorKind;

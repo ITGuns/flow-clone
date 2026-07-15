@@ -69,7 +69,9 @@ export function HotkeyRecorder({
     <div className="uts-row">
       <div className="uts-row-main">
         <p className="uts-row-label">Push-to-talk shortcut</p>
-        <p className="uts-row-hint">Hold this key while you speak. Pick a function key or add a modifier.</p>
+        <p className="uts-row-hint">
+          Hold this key while you speak. Pick a function key or add a modifier.
+        </p>
         {conflict ? (
           <p className="uts-hint" role="note">
             {conflict}
@@ -96,7 +98,12 @@ export function HotkeyRecorder({
         >
           {recording ? 'Recording…' : 'Record'}
         </button>
-        <button type="button" className="uts-btn" onClick={reset} disabled={value === defaultHotkey}>
+        <button
+          type="button"
+          className="uts-btn"
+          onClick={reset}
+          disabled={value === defaultHotkey}
+        >
           Reset
         </button>
         <span id={statusId} className="uts-visually-hidden" hidden>

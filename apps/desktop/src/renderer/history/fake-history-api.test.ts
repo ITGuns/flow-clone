@@ -4,7 +4,7 @@ import { makeItem, makeSeries } from './test-fixtures';
 
 describe('wordsOf / matchesQuery — exact-word (AND) semantics', () => {
   it('tokenizes on case + punctuation boundaries', () => {
-    expect(wordsOf("Kubernetes cluster, up!")).toEqual(['kubernetes', 'cluster', 'up']);
+    expect(wordsOf('Kubernetes cluster, up!')).toEqual(['kubernetes', 'cluster', 'up']);
   });
 
   it('matches whole words only, ANDing multiple query words', () => {
@@ -69,7 +69,9 @@ describe('FakeHistoryApi.list — search', () => {
   });
 
   it('paginates within a filtered result set', async () => {
-    const api = new FakeHistoryApi(makeSeries(6, (i) => (i % 2 === 0 ? `alpha word ${i}` : `beta ${i}`)));
+    const api = new FakeHistoryApi(
+      makeSeries(6, (i) => (i % 2 === 0 ? `alpha word ${i}` : `beta ${i}`)),
+    );
     const p1 = await api.list({ q: 'alpha', limit: 2 });
     expect(p1.items.map((i) => i.id)).toEqual(['i0', 'i2']);
     expect(p1.nextCursor).toBeDefined();

@@ -110,13 +110,13 @@ We collect anonymous product analytics to understand how the app is used and to 
 We use the following service providers ("subprocessors") to run the Service. Each receives only
 the data it needs for its function:
 
-| Provider | Function | What it handles |
-|---|---|---|
-| **Deepgram** | Speech-to-text | Streamed audio, transiently, to produce transcripts |
-| **Anthropic** | Text formatting | The transcribed text, to clean and format it |
-| **Clerk** | Authentication | Your account identity and email |
-| **Stripe** | Payments | Your billing and subscription details (card handled by Stripe) |
-| **Fly.io** | Hosting | Operates the servers the Service runs on |
+| Provider      | Function        | What it handles                                                |
+| ------------- | --------------- | -------------------------------------------------------------- |
+| **Deepgram**  | Speech-to-text  | Streamed audio, transiently, to produce transcripts            |
+| **Anthropic** | Text formatting | The transcribed text, to clean and format it                   |
+| **Clerk**     | Authentication  | Your account identity and email                                |
+| **Stripe**    | Payments        | Your billing and subscription details (card handled by Stripe) |
+| **Fly.io**    | Hosting         | Operates the servers the Service runs on                       |
 
 We also operate a **self-hosted PostHog** instance for anonymous telemetry. Because we host it
 ourselves, it is **not** a third party that receives your data.

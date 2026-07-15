@@ -16,7 +16,9 @@ for (const dir of [marketingDist, webDist]) {
   try {
     await access(dir);
   } catch {
-    console.error(`missing build output: ${dir} — run the workspace builds first (pnpm site:build)`);
+    console.error(
+      `missing build output: ${dir} — run the workspace builds first (pnpm site:build)`,
+    );
     process.exit(1);
   }
 }
