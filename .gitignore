@@ -38,3 +38,6 @@ Thumbs.db
 
 # machine-local permission grants
 .claude/settings.local.json
+
+# assembled public site (scripts/build-site.mjs)
+site-dist/

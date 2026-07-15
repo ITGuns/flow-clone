@@ -14,7 +14,9 @@
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "format": "prettier --check .",
-    "format:write": "prettier --write ."
+    "format:write": "prettier --write .",
+    "site:build": "pnpm --filter @undertone/marketing build && pnpm --filter @undertone/web build && node scripts/build-site.mjs",
+    "site:serve": "node scripts/serve-site.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
