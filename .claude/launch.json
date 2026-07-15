@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@undertone/api", "start"],
+      "port": 8080,
+      "env": { "MOCK_MODE": "1" }
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@undertone/web", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "marketing",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@undertone/marketing", "dev", "--", "--port", "5174"],
+      "port": 5174
+    }
+  ]
+}
