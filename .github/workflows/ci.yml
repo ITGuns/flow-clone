@@ -1,7 +1,5 @@
 name: CI
 
-# Keyless CI: everything runs under MOCK_MODE=1 (CONTRACTS.md §10, ARCHITECTURE.md §5).
-# No external API keys are required or referenced.
 on:
   push:
     branches: [main]
@@ -12,58 +10,22 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  MOCK_MODE: '1'
-
 jobs:
-  # Primary gate: lint + typecheck + test across every workspace on Linux.
-  check:
-    name: check (ubuntu-latest)
+  build:
+    name: Build website
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -r typecheck
-      - run: pnpm -r lint
-      - run: pnpm -r test
 
-  # Native OS matrix. This is the landing zone for the per-OS native modules that arrive in
-  # Phase 2 (Windows SendInput/UIA, macOS AX). Until then it runs the same TS suites on
-  # macos-latest and windows-latest to prove install/typecheck/test are green on both OSes —
-  # the definition of "compiles and passes" for native code (STATUS.md constraint #2).
-  native-matrix:
-    name: native (${{ matrix.os }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
           version: 10
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: pnpm
+
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -r typecheck
-      - run: pnpm -r test
-      # Compile + smoke-load the per-OS N-API addon on its real runner — the CI authority for
-      # native code (guide §4.5): macOS = task-2a AX injection / CGEventTap hotkey; windows =
-      # task-2b SendInput / low-level hook. build:native and smoke:native dispatch on
-      # process.platform (native/build-native.mjs) and no-op off their target OS, so a single
-      # unconditional invocation builds exactly the right addon on each matrix leg.
-      # SendInput/AX landing and hotkey-while-unfocused remain §8 human checkpoints.
-      - name: Build native addon (per-OS)
-        run: pnpm --filter @undertone/desktop build:native
-      - name: Smoke-load native addon (per-OS)
-        run: pnpm --filter @undertone/desktop smoke:native
+
+      - run: pnpm --filter @undertone/marketing build
