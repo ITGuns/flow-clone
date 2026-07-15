@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Undertone pricing — Free and Pro plans</title>
+    <meta
+      name="description"
+      content="Undertone Free gives you 2,000 formatted words a week. Pro is $12/mo or $96/yr for unlimited dictation. Start with a 14-day Pro trial, no card required."
+    />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('undertone-theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme =
+            stored === 'light' || stored === 'dark' ? stored : prefersDark ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          /* storage blocked */
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <nav class="nav" aria-label="Primary">
+          <a class="brand" href="index.html" aria-label="Undertone home">
+            <svg class="brand__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M3 12h2.5l1.8-6 2.4 15 2.6-19 2.4 15 1.8-5H21"
+                stroke="var(--accent)"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Undertone
+          </a>
+
+          <button
+            class="icon-btn nav__toggle"
+            type="button"
+            data-nav-toggle
+            aria-expanded="false"
+            aria-label="Toggle navigation menu"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+              <path
+                d="M4 7h16M4 12h16M4 17h16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+
+          <div class="nav__menu" data-nav-menu>
+            <ul class="nav__links">
+              <li><a href="index.html#how">How it works</a></li>
+              <li><a href="index.html#difference">The difference</a></li>
+              <li><a href="index.html#privacy">Privacy</a></li>
+              <li><a href="pricing.html" aria-current="page">Pricing</a></li>
+            </ul>
+            <div class="nav__actions">
+              <button class="icon-btn" type="button" data-theme-toggle aria-pressed="false">
+                <svg
+                  class="moon"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  class="sun"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+                  <path
+                    d="M12 2v2m0 16v2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4M2 12h2m16 0h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+              <a class="btn" href="index.html#download">Download</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="section" style="text-align: center; padding-bottom: 0">
+        <div class="wrap">
+          <p class="eyebrow">Pricing</p>
+          <h1>Start free. Upgrade when your voice does the writing.</h1>
+          <p class="lede" style="margin-inline: auto">
+            Every plan includes the full formatting engine, custom dictionary, and encrypted
+            history. You only pay when you dictate a lot.
+          </p>
+          <div class="billing" role="group" aria-label="Billing period">
+            <button type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
+            <button type="button" data-billing="yearly" aria-pressed="false">
+              Yearly <span class="save">save $48</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" style="padding-top: clamp(2rem, 1rem + 3vw, 3.5rem)">
+        <div class="wrap">
+          <div class="plans" data-price-period="monthly">
+            <!-- Free -->
+            <article class="plan">
+              <p class="plan__name">Free</p>
+              <div class="plan__price">
+                <span class="plan__amount">$0</span>
+                <span class="plan__per">forever</span>
+              </div>
+              <p class="plan__tagline">Everything you need to write with your voice, every day.</p>
+              <ul class="plan__features">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span><strong>2,000</strong> formatted words every week</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Full formatting, punctuation, and voice commands</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Custom dictionary for names and jargon</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Encrypted, searchable history across devices</span>
+                </li>
+              </ul>
+              <a class="btn btn--ghost btn--block" href="index.html#download">Download free</a>
+            </article>
+
+            <!-- Pro -->
+            <article class="plan plan--pro">
+              <span class="plan__badge">Most popular</span>
+              <p class="plan__name">Pro</p>
+              <div class="plan__price" data-price-period="monthly">
+                <span class="plan__amount price-monthly">$12</span>
+                <span class="plan__per price-monthly">per month</span>
+                <span class="plan__amount price-yearly">$96</span>
+                <span class="plan__per price-yearly">per year</span>
+              </div>
+              <p class="plan__tagline">
+                For people who'd rather talk than type — all day, every day.
+              </p>
+              <ul class="plan__features">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span
+                    >Unlimited dictation, fair-use cap of <strong>50k</strong> words a week</span
+                  >
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Everything in Free, with priority formatting</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Larger custom dictionary and register tuning</span>
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m5 13 4 4 10-11"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>$12/mo billed monthly, or $96/yr — two months free</span>
+                </li>
+              </ul>
+              <a class="btn btn--block" href="index.html#download">Start 14-day Pro trial</a>
+              <p class="plan__fineprint">14-day free trial. No card required.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section section--tint">
+        <div class="wrap">
+          <div class="section__head" style="text-align: center; margin-inline: auto">
+            <p class="eyebrow">Questions</p>
+            <h2>Pricing, answered</h2>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>What counts as a "formatted word"?</summary>
+              <p>
+                We count the words in the polished text Undertone actually inserts at your cursor,
+                measured when the text is produced. Filler you spoke but that never gets typed —
+                "um", false starts, "scratch that" — doesn't count against you.
+              </p>
+            </details>
+            <details>
+              <summary>What happens on Free when I hit 2,000 words?</summary>
+              <p>
+                Dictation pauses until the weekly counter resets, and Undertone tells you plainly
+                rather than silently dropping your words. Your last transcript is still handed back
+                so nothing you said is lost. Weeks reset every Monday.
+              </p>
+            </details>
+            <details>
+              <summary>Do I need a credit card to try Pro?</summary>
+              <p>
+                No. The 14-day Pro trial starts the moment you sign up, with no card and no
+                commitment. If you do nothing when it ends, you simply drop back to the Free plan.
+              </p>
+            </details>
+            <details>
+              <summary>Is Pro really unlimited? What is the 50k cap?</summary>
+              <p>
+                Pro is unlimited for normal human dictation. The 50k-words-per-week fair-use cap
+                exists only to stop automated or abusive use from degrading the service for everyone
+                else — a genuinely heavy speaker won't come close.
+              </p>
+            </details>
+            <details>
+              <summary>Can I switch between monthly and yearly?</summary>
+              <p>
+                Yes. You can move from $12/mo to $96/yr (or back) at any time, and the change is
+                prorated against what you've already paid. Yearly works out to two months free.
+              </p>
+            </details>
+            <details>
+              <summary>Does the price include both macOS and Windows?</summary>
+              <p>
+                One subscription covers you on every device you use, on both macOS and Windows. Your
+                dictionary and history sync across all of them.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <a class="brand" href="index.html" aria-label="Undertone home">
+            <svg class="brand__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M3 12h2.5l1.8-6 2.4 15 2.6-19 2.4 15 1.8-5H21"
+                stroke="var(--accent)"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Undertone
+          </a>
+          <nav aria-label="Footer">
+            <a href="index.html#how">How it works</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+          </nav>
+        </div>
+        <p class="footer-note">
+          Undertone is a working codename. Push-to-talk dictation for macOS and Windows. &copy; 2026
+          Undertone.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
