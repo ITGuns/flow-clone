@@ -17,6 +17,21 @@ export interface MeResponse {
   usage: { wordsThisWeek: number; limit: number };
 }
 
+/** Billing cadence for the Pro plan — mirrors the api's `PlanInterval` (billing/plans.ts). */
+export type CheckoutInterval = 'monthly' | 'yearly';
+
+/** `POST /v1/billing/checkout` 200 body — the hosted Stripe Checkout URL to open. */
+export interface CheckoutResponse {
+  url: string;
+}
+
+/** `GET /healthz` 200 body (apps/api/src/index.ts `HealthResponse`). */
+export interface HealthStatus {
+  ok: boolean;
+  /** True under MOCK_MODE=1 — the checkout URL is a fake that won't resolve. */
+  mock: boolean;
+}
+
 export interface HistoryListParams {
   q?: string;
   cursor?: string;
@@ -57,6 +72,13 @@ export interface WebApi {
   getMe(): Promise<MeResponse>;
   listHistory(params?: HistoryListParams): Promise<HistoryListResult>;
   deleteHistory(id: string): Promise<void>;
+  /**
+   * Start a Stripe Checkout session for the Pro plan (`POST /v1/billing/checkout`). Optional so the
+   * existing history-only fakes stay valid without change; the concrete client always implements it.
+   */
+  createCheckout?(interval: CheckoutInterval): Promise<CheckoutResponse>;
+  /** Read `/healthz` (unauthenticated) — the billing UI uses `mock` to gate `window.open`. */
+  getHealth?(): Promise<HealthStatus>;
 }
 
 function kindForStatus(status: number): ApiErrorKind {
@@ -98,6 +120,22 @@ export class RestApiClient implements WebApi {
 
   async deleteHistory(id: string): Promise<void> {
     await this.authed(`${this.baseUrl}/v1/history/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
+
+  /** Bearer-authenticated `POST /v1/billing/checkout` → `{ url }` (§5 additive checkout endpoint). */
+  async createCheckout(interval: CheckoutInterval): Promise<CheckoutResponse> {
+    const res = await this.authed(`${this.baseUrl}/v1/billing/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ interval }),
+    });
+    return (await res.json()) as CheckoutResponse;
+  }
+
+  /** Unauthenticated `GET /healthz` → `{ ok, mock }`. */
+  async getHealth(): Promise<HealthStatus> {
+    const res = await this.request(`${this.baseUrl}/healthz`, { method: 'GET' });
+    return (await res.json()) as HealthStatus;
   }
 
   private historyUrl(params: HistoryListParams): string {

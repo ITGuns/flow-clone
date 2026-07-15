@@ -7,6 +7,7 @@ import type { MeResponse, WebApi } from './api/client';
 import { DictationSurface } from './components/DictationSurface';
 import { HistoryPanel } from './components/HistoryPanel';
 import { UsageMeter } from './components/UsageMeter';
+import { BillingSection } from './billing/BillingSection';
 import { BrandMark, ThemeIcon } from './components/icons';
 import { THEME_STORAGE_KEY, nextTheme, type Theme } from './theme';
 
@@ -15,7 +16,15 @@ export interface AppProps {
   api: WebApi;
 }
 
-type Tab = 'dictate' | 'history';
+type Tab = 'dictate' | 'history' | 'billing';
+
+/** The billing section is deep-linkable at `/app/#billing` (marketing Pro CTAs point here). */
+const BILLING_HASH = '#billing';
+
+function tabFromHash(): Tab {
+  if (typeof window === 'undefined') return 'dictate';
+  return window.location.hash === BILLING_HASH ? 'billing' : 'dictate';
+}
 
 function currentTheme(): Theme {
   if (typeof document === 'undefined') return 'light';
@@ -23,10 +32,19 @@ function currentTheme(): Theme {
 }
 
 export function App({ deps, api }: AppProps): JSX.Element {
-  const [tab, setTab] = useState<Tab>('dictate');
+  const [tab, setTab] = useState<Tab>(tabFromHash);
   const [me, setMe] = useState<MeResponse | null>(null);
   const [liveUsage, setLiveUsage] = useState<UsageState | null>(null);
   const [theme, setTheme] = useState<Theme>(currentTheme());
+
+  // Deep-link: `#billing` (from the marketing Pro CTAs or the quota upgrade hint) lands here.
+  useEffect(() => {
+    const onHash = (): void => {
+      if (window.location.hash === BILLING_HASH) setTab('billing');
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -85,6 +103,14 @@ export function App({ deps, api }: AppProps): JSX.Element {
             >
               History
             </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'billing'}
+              onClick={() => setTab('billing')}
+            >
+              Billing
+            </button>
           </div>
           <button
             type="button"
@@ -109,6 +135,9 @@ export function App({ deps, api }: AppProps): JSX.Element {
           </div>
           <div className="tabpanel" hidden={tab !== 'history'}>
             <HistoryPanel api={api} />
+          </div>
+          <div className="tabpanel" hidden={tab !== 'billing'}>
+            <BillingSection api={api} me={me} usage={usage} />
           </div>
         </div>
       </main>

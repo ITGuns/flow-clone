@@ -93,6 +93,13 @@ describe('CTAs point at the web dashboard, not a download (task 4h / DECISIONS D
   it('pricing plan CTAs route into the dashboard', () => {
     expect(pages.pricing).toContain('href="/app/"');
   });
+
+  it('the Pro plan CTA deep-links into the dashboard billing section (task 4i)', () => {
+    // The Pro upgrade CTA points at /app/#billing so the trial/upgrade path lands on the billing
+    // section directly, not the bare dashboard.
+    expect(pages.pricing).toContain('href="/app/#billing"');
+    expect(pages.pricing).toContain('Start 14-day Pro trial');
+  });
 });
 
 describe('legal stubs reference the real counsel docs (task 4h)', () => {

@@ -85,6 +85,49 @@ describe('RestApiClient — history', () => {
   });
 });
 
+describe('RestApiClient — POST /v1/billing/checkout', () => {
+  it('POSTs the interval with a bearer token and returns the checkout url', async () => {
+    const bodies: string[] = [];
+    const { fetch, calls } = recorder((call) => {
+      if (call.url.endsWith('/session/token')) return json({ token: 'tok-3', expiresAt: 'x' });
+      return json({ url: 'https://checkout.stripe.test/session/1' });
+    });
+    // Capture the request body separately (the recorder only records url/method/auth).
+    const wrapped: FetchFn = async (url, init) => {
+      if (typeof init?.body === 'string' && String(url).includes('/billing/checkout')) {
+        bodies.push(init.body);
+      }
+      return fetch(url, init);
+    };
+    const client = new RestApiClient({ baseUrl: BASE, fetch: wrapped });
+    const result = await client.createCheckout('yearly');
+    expect(result).toEqual({ url: 'https://checkout.stripe.test/session/1' });
+    const checkoutCall = calls.find((c) => c.url.endsWith('/v1/billing/checkout'));
+    expect(checkoutCall?.method).toBe('POST');
+    expect(checkoutCall?.auth).toBe('Bearer tok-3');
+    expect(bodies).toEqual([JSON.stringify({ interval: 'yearly' })]);
+  });
+
+  it('maps a 401 (after refresh also fails) to ApiError(auth)', async () => {
+    const { fetch } = recorder((call) =>
+      call.url.endsWith('/session/token') ? json({ token: 't', expiresAt: 'x' }) : json({}, 401),
+    );
+    const client = new RestApiClient({ baseUrl: BASE, fetch });
+    await expect(client.createCheckout('monthly')).rejects.toMatchObject({ kind: 'auth' });
+  });
+});
+
+describe('RestApiClient — GET /healthz', () => {
+  it('reads the unauthenticated health body (no bearer)', async () => {
+    const { fetch, calls } = recorder(() => json({ ok: true, mock: true }));
+    const client = new RestApiClient({ baseUrl: BASE, fetch });
+    expect(await client.getHealth()).toEqual({ ok: true, mock: true });
+    const call = calls.find((c) => c.url.endsWith('/healthz'));
+    expect(call?.method).toBe('GET');
+    expect(call?.auth).toBeNull();
+  });
+});
+
 describe('RestApiClient — auth refresh + error mapping', () => {
   it('refreshes the token once on a 401 and retries', async () => {
     let tokenN = 0;
