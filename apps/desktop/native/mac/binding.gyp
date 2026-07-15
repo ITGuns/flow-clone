@@ -25,9 +25,6 @@
             }
           },
           {
-            # Non-mac: no sources. The build script (build-if-darwin.mjs) skips node-gyp entirely
-            # off darwin, so this target is never actually configured on Windows/Linux; the empty
-            # branch keeps `gyp` well-formed if it is ever evaluated.
             "type": "none"
           }
         ]

@@ -2,8 +2,6 @@
   "targets": [
     {
       "target_name": "undertone_win",
-      # Guard: on non-Windows this becomes a no-op target so `node-gyp` / install never fails on
-      # mac/linux (CONTRACTS.md §2.3, guide §4.5 — the OS-matrix CI is the authority for native).
       "conditions": [
         ["OS=='win'", {
           "sources": [
