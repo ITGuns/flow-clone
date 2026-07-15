@@ -50,6 +50,23 @@ describe('App shell', () => {
     expect(panels[1]!.hidden).toBe(false);
   });
 
+  it('shows the demo-mode banner when the API reports mock mode', async () => {
+    const api = Object.assign(new FakeApi(), {
+      getHealth: async () => ({ ok: true, mock: true }),
+    });
+    mounted = await mount(<App deps={makeFakeDeps().deps} api={api} />);
+    await flush();
+    const note = query<HTMLElement>(mounted.container, '.demo-note');
+    expect(text(note)).toContain('Demo mode');
+    expect(text(note)).toContain('DEEPGRAM_API_KEY');
+  });
+
+  it('shows no demo banner when health is unavailable or real-mode', async () => {
+    mounted = await mount(<App deps={makeFakeDeps().deps} api={new FakeApi()} />);
+    await flush();
+    expect(mounted.container.querySelector('.demo-note')).toBeNull();
+  });
+
   it('toggles the colour theme', async () => {
     mounted = await mount(<App deps={makeFakeDeps().deps} api={new FakeApi()} />);
     await flush();

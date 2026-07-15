@@ -36,6 +36,24 @@ export function App({ deps, api }: AppProps): JSX.Element {
   const [me, setMe] = useState<MeResponse | null>(null);
   const [liveUsage, setLiveUsage] = useState<UsageState | null>(null);
   const [theme, setTheme] = useState<Theme>(currentTheme());
+  const [mockMode, setMockMode] = useState(false);
+
+  // Demo-mode banner: without ASR/formatting keys the server transcribes everyone's audio as
+  // canned fixtures — say so, or working-as-built reads as broken (real speech lands with keys).
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .getHealth?.()
+      .then((h) => {
+        if (!cancelled && h?.mock) setMockMode(true);
+      })
+      .catch(() => {
+        /* unknown health — assume real, no banner */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [api]);
 
   // Deep-link: `#billing` (from the marketing Pro CTAs or the quota upgrade hint) lands here.
   useEffect(() => {
@@ -126,6 +144,15 @@ export function App({ deps, api }: AppProps): JSX.Element {
 
       <main id="main">
         <div className="wrap">
+          {mockMode && (
+            <div className="panel demo-note" role="note" style={{ marginBottom: '1.25rem' }}>
+              <strong>Demo mode.</strong> Speech keys aren&apos;t configured yet, so releases
+              return sample transcripts — not your words. The mic level, streaming, formatting,
+              and history are all live. Add <code>DEEPGRAM_API_KEY</code> and{' '}
+              <code>ANTHROPIC_API_KEY</code> to <code>apps/api/.env</code> and restart the API
+              for real dictation.
+            </div>
+          )}
           <div className="panel" style={{ marginBottom: '1.25rem' }}>
             <UsageMeter usage={usage} plan={me?.plan} />
           </div>
