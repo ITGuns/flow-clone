@@ -6,6 +6,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { pathToFileURL } from 'node:url';
 import Fastify, { type FastifyInstance } from 'fastify';
+import cors from '@fastify/cors';
 import { MockASRProvider, MockFormatter, UndertoneError, toErrorMessage } from '@undertone/shared';
 import { DeepgramASRProvider } from './asr/deepgram';
 import { HaikuFormatter } from './format';
@@ -107,6 +108,17 @@ export function buildServer(
   appDeps?: AppRouteDeps,
 ): FastifyInstance {
   const app = Fastify({ logger: false });
+
+  // CORS for the web dashboard (apps/web, task 4h). Additive: allows the Vite dev origin plus an
+  // optional `WEB_ORIGIN` (the deployed dashboard origin in real mode). Enables the browser to POST
+  // /v1/session/token and read /v1/me + /v1/history cross-origin. Existing routes/tests are
+  // unaffected — same-origin (app.inject) requests carry no Origin header and are never blocked.
+  const webOrigin = process.env.WEB_ORIGIN;
+  const allowedOrigins = ['http://localhost:5173', ...(webOrigin ? [webOrigin] : [])];
+  void app.register(cors, {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  });
 
   app.get('/healthz', (): HealthResponse => ({ ok: true, mock: env.mock }));
 

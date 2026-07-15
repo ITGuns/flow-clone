@@ -73,3 +73,34 @@ describe('privacy claims survive into built HTML', () => {
     expect(pages.privacy).toContain(PRIVACY_CLAIMS.telemetry);
   });
 });
+
+describe('CTAs point at the web dashboard, not a download (task 4h / DECISIONS D-023)', () => {
+  it('the landing page leads with an "Open the dashboard" CTA into /app/', () => {
+    expect(pages.index).toContain('Open the dashboard');
+    expect(pages.index).toContain('href="/app/"');
+  });
+
+  it('no download buttons remain on the landing or pricing pages', () => {
+    for (const page of ['index', 'pricing', 'privacy', 'terms']) {
+      expect(pages[page], `${page} still references a download`).not.toContain('Download for');
+      expect(pages[page], `${page} still links #download`).not.toContain('#download');
+    }
+    expect(pages.index).not.toContain('Download for macOS');
+    expect(pages.index).not.toContain('Download for Windows');
+    expect(pages.pricing).not.toContain('Download free');
+  });
+
+  it('pricing plan CTAs route into the dashboard', () => {
+    expect(pages.pricing).toContain('href="/app/"');
+  });
+});
+
+describe('legal stubs reference the real counsel docs (task 4h)', () => {
+  it('privacy points at docs/legal/privacy-policy.md', () => {
+    expect(pages.privacy).toContain('docs/legal/privacy-policy.md');
+  });
+
+  it('terms points at docs/legal/terms-of-service.md', () => {
+    expect(pages.terms).toContain('docs/legal/terms-of-service.md');
+  });
+});

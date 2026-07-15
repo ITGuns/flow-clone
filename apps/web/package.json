@@ -1,0 +1,26 @@
+{
+  "name": "@undertone/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Undertone web dashboard — browser push-to-talk dictation (getUserMedia → WS streaming → formatted text), history, and usage. Primary user-facing surface (DECISIONS D-023).",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@undertone/shared": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "jsdom": "^29.1.1",
+    "vite": "^6.0.0"
+  }
+}
