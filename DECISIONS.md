@@ -151,3 +151,14 @@ deprioritized.
 The 4a agent died mid-task on an API session-limit error with uncommitted work in
 .worktrees/4a (Electron screenshot harness debugging). Worktree + branch task/4a preserved
 untouched for resume. With D-023 the HUD is not on the critical path; resume after 4h.
+
+## 2026-07-15 - D-025: Design elevation to reference-product craft (task 4j, user-directed)
+User wants UI on par with wisprflow.ai. Studied its design language (structure/motion only).
+We keep our own identity (terracotta + editorial serif) and match CRAFT: GSAP+ScrollTrigger
+on the static landing (free since Webflow acquisition), motion (framer-motion successor) for
+dashboard micro-interactions, plus an ORIGINAL hand-authored SVG asset library (logo mark,
+hero art, feature glyphs, empty states) - no raster generation available, vectors preferred
+anyway. HARD CONSTRAINT: no fabricated social proof (testimonials/logos/user counts) - the
+reference has them, we have no customers; honest sections only. Latency claim grounded in the
+ARCHITECTURE budget. Runs parallel to 4i with disjoint file allowlists (App.tsx/billing/
+pricing.html excluded from 4j).
