@@ -140,3 +140,38 @@ bug with the app name, the observed `method`/`code`, and whether focus moved.
 
 **Pass = every numbered step behaves as described on physical Windows.** File deviations as a 2b
 bug with app name, observed `method`/`code`, and whether focus moved.
+
+## Blocking public launch
+
+### 14. Counsel review of privacy policy + ToS drafts (task 4f)
+
+Drafts produced 2026-07-15: `docs/legal/privacy-policy.md` and `docs/legal/terms-of-service.md`
+(status note in `docs/legal/README.md`). They are drafts, NOT final legal documents, and **must
+be reviewed and finalized by qualified legal counsel before any public launch** (supersedes the
+earlier placeholder item #11). The technical claims in the privacy policy were verified against
+the actual code at drafting time — if the implementation changes, the policy must be re-verified.
+
+**Blanks counsel must fill (search both files for `[COUNSEL: …]` and `[COMPANY]`):**
+- **Entity + identity:** the real legal entity name replacing `[COMPANY]`, entity type,
+  registered address, and privacy/DPO contact email (privacy §10, §1; ToS §11). Note: the product
+  name "Undertone" is itself a placeholder codename pending the item-#10 name/trademark decision.
+- **Effective dates** for both documents.
+- **Governing law / jurisdiction and venue**, and the dispute-resolution method — courts vs.
+  arbitration, class-action waiver, consumer-protection carve-outs (ToS §10).
+- **GDPR specifics:** lawful bases for each processing activity, full data-subject rights,
+  international-transfer safeguards (e.g. SCCs) and processing regions for the subprocessors,
+  supervisory-authority complaint right, breach-notification commitments (privacy §2, §3, §5,
+  §6, §7).
+- **CCPA/CPRA specifics:** "sale"/"share" definitions and disclosures, and the full set of
+  consumer rights and how to exercise them (privacy §3, §6).
+- **Children:** confirm the correct age threshold per jurisdiction (13 vs. 16) and COPPA
+  obligations (privacy §8; ToS §1).
+- **Retention periods:** backup-retention window for deleted transcripts, account-data retention
+  on closure, and telemetry retention (privacy §4).
+- **Billing/consumer terms:** taxes, currency, price-change notice period, auto-renewal
+  disclosures required by law, and the refund / cooling-off policy (ToS §5).
+- **Liability:** the total aggregate liability cap and any mandatory consumer-law exceptions that
+  cannot be limited or disclaimed (ToS §6, §7).
+- **Warranty:** finalize the "as is" disclaimer and any non-disclaimable consumer warranties
+  (ToS §6).
+- **Canonical URLs** for the published policy and change-notification method (privacy §9; ToS §9).
