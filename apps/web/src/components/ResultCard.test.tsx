@@ -83,4 +83,28 @@ describe('ResultCard', () => {
     );
     expect(text(mounted.container)).toContain('ASR unavailable');
   });
+
+  // Behaviour-preservation: with animation ENABLED (reduced-motion off) the streaming partial is
+  // split into per-word motion spans; the rendered text must stay byte-identical to the transcript.
+  it('preserves the partial text verbatim when the word-fade animation is on', async () => {
+    const original = window.matchMedia;
+    window.matchMedia = (() => ({
+      matches: false,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    })) as unknown as typeof window.matchMedia;
+    try {
+      mounted = await mount(
+        <ResultCard
+          utterance={makeUtterance({ phase: 'recording', partial: 'hello there brave world' })}
+        />,
+      );
+      // Rendered as several word spans...
+      expect(mounted.container.querySelectorAll('.result__word').length).toBeGreaterThan(1);
+      // ...but the visible text is unchanged.
+      expect(text(mounted.container)).toContain('hello there brave world');
+    } finally {
+      window.matchMedia = original;
+    }
+  });
 });

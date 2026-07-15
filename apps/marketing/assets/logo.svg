@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Undertone">
+  <!-- The "spoken underline": a baseline that swells in the middle like a drawn breath.
+       One filled lens so it stays legible down to 16px. Accent-driven; standalone fallback ember. -->
+  <path
+    d="M2 13c5-3 15-3 20 0-5 3-15 3-20 0Z"
+    fill="var(--accent, #b23c14)"
+  />
+  <circle cx="12" cy="7.5" r="1.4" fill="var(--accent, #b23c14)" opacity="0.55" />
+</svg>

@@ -402,6 +402,16 @@ main {
     0 0 0 6px var(--accent-soft),
     var(--shadow);
 }
+/* Terracotta glow behind the button while listening (motion-driven; opacity 0 at rest). */
+.ptt__glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
 .ptt__ring {
   position: absolute;
   inset: -6px;
@@ -440,6 +450,14 @@ main {
   height: calc(18% + var(--level, 0) * 82%);
   min-height: 3px;
   transition: height 0.08s linear;
+}
+/* Keep the button's content above the glow layer. */
+.ptt__label,
+.ptt__cadence,
+.ptt__ring,
+.ptt__button > svg {
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== Result card ===== */
@@ -483,6 +501,24 @@ main {
 .result__partial {
   color: var(--muted);
   font-style: italic;
+}
+/* Streaming partial: each word fades in (motion). Whitespace preserved via the parent's pre-wrap. */
+.result__word {
+  display: inline;
+  white-space: pre-wrap;
+}
+/* Copy button icon morph: idle copy glyph ⇄ success tick occupy the same 16px box. */
+.result__copyicon {
+  position: relative;
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+}
+.result__copyicon-in {
+  grid-area: 1 / 1;
+  display: inline-grid;
+  place-items: center;
 }
 .result__note {
   margin-top: 0.9rem;
@@ -589,11 +625,24 @@ main {
   max-width: 40ch;
   margin-inline: auto;
 }
-.primer__icon {
-  width: 2.6rem;
-  height: 2.6rem;
-  color: var(--accent);
-  margin-bottom: 0.75rem;
+.primer__art {
+  width: 11rem;
+  margin: 0 auto 0.75rem;
+  color: var(--faint);
+}
+
+/* ===== Empty / error state illustrations ===== */
+.empty-state {
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  color: var(--faint);
+}
+.art {
+  width: 11rem;
+  max-width: 100%;
+  height: auto;
 }
 
 /* ===== History ===== */

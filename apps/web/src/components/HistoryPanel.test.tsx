@@ -88,10 +88,26 @@ describe('HistoryPanel', () => {
     expect(api.listCalls.some((c) => c.cursor === 'CUR')).toBe(true);
   });
 
-  it('shows an empty state when there is no history', async () => {
+  it('shows an empty state with its illustration when there is no history', async () => {
     const api = new FakeApi({ history: () => ({ items: [] }) });
     mounted = await mount(<HistoryPanel api={api} debounceMs={0} />);
     await run(() => vi.advanceTimersByTime(0));
     expect(text(mounted.container).toLowerCase()).toContain('will appear here');
+    const art = query<SVGElement>(mounted.container, '.empty-state svg[role="img"]');
+    expect(art.getAttribute('aria-label')).toBe('No history yet');
+  });
+
+  it('mounts the error illustration and keeps content visible when the load fails', async () => {
+    const api = new FakeApi({
+      history: () => {
+        throw new Error('boom');
+      },
+    });
+    mounted = await mount(<HistoryPanel api={api} debounceMs={0} />);
+    await run(() => vi.advanceTimersByTime(0));
+    const body = text(mounted.container).toLowerCase();
+    expect(body).toContain('could not load your history');
+    const art = query<SVGElement>(mounted.container, '.empty-state svg[role="img"]');
+    expect(art.getAttribute('aria-label')).toBe('Something went wrong');
   });
 });

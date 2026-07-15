@@ -12,6 +12,9 @@
     "lint": "eslint .",
     "test": "vitest run"
   },
+  "dependencies": {
+    "gsap": "^3.13.0"
+  },
   "devDependencies": {
     "vite": "^6.0.0"
   }

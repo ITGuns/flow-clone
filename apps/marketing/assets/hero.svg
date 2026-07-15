@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 210" fill="none" role="img" aria-label="Speech resolving into written lines">
+  <!-- Layered hero artwork. Two registers on one baseline:
+       [wave]  a breathing speech waveform (what the mic hears)
+       [lines] the typeset lines it resolves into (what gets written)
+       GSAP breathes the wave and cross-resolves it into the lines. Static fallback: both visible. -->
+  <rect x="8" y="8" width="304" height="194" rx="18" stroke="currentColor" stroke-opacity="0.14" stroke-width="2" />
+
+  <g data-layer="wave" stroke="var(--accent, #b23c14)" stroke-width="3.5" stroke-linecap="round">
+    <line x1="40" y1="78" x2="40" y2="92" opacity="0.9" />
+    <line x1="58" y1="60" x2="58" y2="110" opacity="0.9" />
+    <line x1="76" y1="44" x2="76" y2="126" />
+    <line x1="94" y1="66" x2="94" y2="104" opacity="0.9" />
+    <line x1="112" y1="52" x2="112" y2="118" />
+    <line x1="130" y1="72" x2="130" y2="98" opacity="0.8" />
+    <line x1="148" y1="40" x2="148" y2="130" />
+    <line x1="166" y1="64" x2="166" y2="106" opacity="0.9" />
+    <line x1="184" y1="56" x2="184" y2="114" />
+    <line x1="202" y1="74" x2="202" y2="96" opacity="0.8" />
+    <line x1="220" y1="50" x2="220" y2="120" />
+    <line x1="238" y1="68" x2="238" y2="102" opacity="0.9" />
+    <line x1="256" y1="62" x2="256" y2="108" opacity="0.9" />
+    <line x1="274" y1="78" x2="274" y2="92" opacity="0.8" />
+  </g>
+
+  <g data-layer="lines" stroke="currentColor" stroke-linecap="round">
+    <line x1="40" y1="150" x2="256" y2="150" stroke-opacity="0.32" stroke-width="6" />
+    <line x1="40" y1="168" x2="280" y2="168" stroke-opacity="0.24" stroke-width="6" />
+    <line x1="40" y1="186" x2="196" y2="186" stroke-opacity="0.18" stroke-width="6" />
+    <!-- the spoken-underline swell, tying the two registers together -->
+    <path d="M40 132c40-9 120-9 160 0-40 5-120 5-160 0Z" fill="var(--accent, #b23c14)" stroke="none" opacity="0.9" />
+  </g>
+</svg>

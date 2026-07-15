@@ -141,9 +141,58 @@
               <span>Messages — reply</span>
             </div>
             <div class="device__body">
+              <!-- Layered hero illustration: a breathing speech wave (top register) resolving into
+                   the typeset lines it becomes (bottom register), tied by the spoken-underline swell.
+                   Animated by src/anim.ts; fully static (and visible) without JS / with reduced motion. -->
+              <svg
+                class="hero-art"
+                data-hero-art
+                viewBox="0 0 320 210"
+                fill="none"
+                role="img"
+                aria-label="Speech resolving into written lines"
+              >
+                <g
+                  data-layer="wave"
+                  stroke="var(--accent)"
+                  stroke-width="3.5"
+                  stroke-linecap="round"
+                >
+                  <line x1="40" y1="78" x2="40" y2="92" opacity="0.9" />
+                  <line x1="58" y1="60" x2="58" y2="110" opacity="0.9" />
+                  <line x1="76" y1="44" x2="76" y2="126" />
+                  <line x1="94" y1="66" x2="94" y2="104" opacity="0.9" />
+                  <line x1="112" y1="52" x2="112" y2="118" />
+                  <line x1="130" y1="72" x2="130" y2="98" opacity="0.8" />
+                  <line x1="148" y1="40" x2="148" y2="130" />
+                  <line x1="166" y1="64" x2="166" y2="106" opacity="0.9" />
+                  <line x1="184" y1="56" x2="184" y2="114" />
+                  <line x1="202" y1="74" x2="202" y2="96" opacity="0.8" />
+                  <line x1="220" y1="50" x2="220" y2="120" />
+                  <line x1="238" y1="68" x2="238" y2="102" opacity="0.9" />
+                  <line x1="256" y1="62" x2="256" y2="108" opacity="0.9" />
+                  <line x1="274" y1="78" x2="274" y2="92" opacity="0.8" />
+                </g>
+                <g data-layer="lines" stroke="currentColor" stroke-linecap="round">
+                  <path
+                    d="M40 132c40-9 120-9 160 0-40 5-120 5-160 0Z"
+                    fill="var(--accent)"
+                    stroke="none"
+                    opacity="0.9"
+                  />
+                  <line x1="40" y1="152" x2="256" y2="152" stroke-opacity="0.32" stroke-width="6" />
+                  <line x1="40" y1="170" x2="280" y2="170" stroke-opacity="0.24" stroke-width="6" />
+                  <line x1="40" y1="188" x2="196" y2="188" stroke-opacity="0.18" stroke-width="6" />
+                </g>
+              </svg>
               <p class="device__typed">
-                Hey — can you send me the deck by tomorrow morning? I want to review it first.
-                Thanks.<span class="device__caret"></span>
+                <span
+                  data-demo-text
+                  data-demo-raw="um so hey can you send me the the deck by end of day no wait scratch that send it by tomorrow morning i want to review it first comma thanks"
+                  data-demo-final="Hey — can you send me the deck by tomorrow morning? I want to review it first. Thanks."
+                  >Hey — can you send me the deck by tomorrow morning? I want to review it first.
+                  Thanks.</span
+                ><span class="device__caret"></span>
               </p>
               <span class="device__pill"><i></i> spoken · formatted · inserted</span>
             </div>
@@ -162,7 +211,7 @@
             </p>
           </div>
           <div class="steps">
-            <article class="step">
+            <article class="step reveal">
               <span class="step__num">1</span>
               <h3>Hold your hotkey</h3>
               <p>
@@ -170,7 +219,7 @@
                 shows Undertone is listening — it never steals your cursor.
               </p>
             </article>
-            <article class="step">
+            <article class="step reveal">
               <span class="step__num">2</span>
               <h3>Say what you mean</h3>
               <p>
@@ -178,7 +227,7 @@
                 talk, so the moment you release there is almost nothing left to wait for.
               </p>
             </article>
-            <article class="step">
+            <article class="step reveal">
               <span class="step__num">3</span>
               <h3>Release — it's typed</h3>
               <p>
@@ -202,7 +251,7 @@
             </p>
           </div>
           <div class="compare">
-            <div class="compare__card compare__card--raw">
+            <div class="compare__card compare__card--raw reveal">
               <p class="compare__tag">What the mic heard</p>
               <p class="compare__raw">
                 um so hey can you send me the the deck by end of day no wait scratch that send it by
@@ -224,8 +273,168 @@
         </div>
       </section>
 
+      <!-- Feature set -->
+      <section class="section section--tint" id="features">
+        <div class="wrap">
+          <div class="section__head reveal">
+            <p class="eyebrow">What you get</p>
+            <h2>Everything the moment needs, nothing it doesn't</h2>
+            <p class="muted">
+              A small set of things done well: the key, the streaming, the polish, and the memory
+              that makes the next sentence faster.
+            </p>
+          </div>
+          <div class="features">
+            <article class="feature reveal">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect
+                  x="3"
+                  y="6"
+                  width="18"
+                  height="12"
+                  rx="3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <path
+                  d="M8 11v2M12 11v2"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M16 15c1.6 0 2.4-1.2 2.4-2.6"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <h3>Global push-to-talk</h3>
+              <p>
+                Hold your key from any app; release and the text is placed. It never steals focus.
+              </p>
+            </article>
+            <article class="feature reveal">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M5 9v6M9 6v12M15 6v12M19 9v6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path d="M12 4v16" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <h3>Transcribed as you speak</h3>
+              <p>
+                Audio streams while you talk, so releasing the key leaves almost nothing to wait
+                for.
+              </p>
+            </article>
+            <article class="feature reveal">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M12 3 5 6v5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-3Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="m9 12 2 2 4-4.5"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <h3>Private by design</h3>
+              <p>Audio is transcribed and discarded; your history is encrypted at rest.</p>
+            </article>
+            <article class="feature reveal">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M17 17H8a3 3 0 0 0-3 3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="m9.5 12 1.4-3.4L12.3 12M9.9 11h2"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <h3>Your own dictionary</h3>
+              <p>Teach it the names, jargon, and spellings raw dictation always mangles.</p>
+            </article>
+            <article class="feature reveal">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M4 12a8 8 0 1 1 2.5 5.8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M4 17v-4h4"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M12 8v4l3 2"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <h3>Searchable history</h3>
+              <p>Every dictation, searchable by exact word and kept in sync across your devices.</p>
+            </article>
+            <article class="feature reveal">
+              <svg class="feature__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect
+                  x="3"
+                  y="4"
+                  width="13"
+                  height="10"
+                  rx="2.5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7 18h13a1 1 0 0 0 1-1V9"
+                  stroke="var(--accent)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7 8h5M7 11h3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <h3>Matched to the app</h3>
+              <p>A chat reply reads like chat; a commit message reads like code.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <!-- Privacy as a feature -->
-      <section class="section section--tint" id="privacy">
+      <section class="section" id="privacy">
         <div class="wrap">
           <div class="section__head">
             <p class="eyebrow">Privacy is the product</p>
@@ -237,7 +446,7 @@
             </p>
           </div>
           <div class="privacy-grid">
-            <article class="privacy-card">
+            <article class="privacy-card reveal">
               <svg class="privacy-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Z"
@@ -257,7 +466,7 @@
                 Your audio is transcribed in real time and discarded — it never touches our disks.
               </p>
             </article>
-            <article class="privacy-card">
+            <article class="privacy-card reveal">
               <svg class="privacy-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <rect
                   x="4"
@@ -280,7 +489,7 @@
                 History is encrypted at rest with AES-256-GCM; plaintext never hits our storage.
               </p>
             </article>
-            <article class="privacy-card">
+            <article class="privacy-card reveal">
               <svg class="privacy-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"

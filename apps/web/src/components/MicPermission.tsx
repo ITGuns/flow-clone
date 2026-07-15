@@ -2,7 +2,7 @@
 // ARCHITECTURE §non-negotiables). The real getUserMedia call only happens once the user accepts
 // here and then presses to talk, so the OS prompt is never sprung on them cold.
 import type { JSX } from 'react';
-import { MicIcon } from './icons';
+import { MicPermissionArt } from '../assets/illustrations';
 
 export interface MicPermissionProps {
   onEnable: () => void;
@@ -11,8 +11,8 @@ export interface MicPermissionProps {
 export function MicPermission({ onEnable }: MicPermissionProps): JSX.Element {
   return (
     <div className="primer">
-      <div className="primer__icon">
-        <MicIcon />
+      <div className="primer__art">
+        <MicPermissionArt />
       </div>
       <h2>Turn on your microphone</h2>
       <p className="muted">

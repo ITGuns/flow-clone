@@ -1,10 +1,16 @@
 // History tab — GET /v1/history with exact-word search (§5/§7), cursor "load more", and per-item
 // delete. Search is debounced. Adapts the desktop history-view patterns as web-native code (no
 // cross-app imports).
+//
+// Motion (4j): rows enter and reflow with a layout animation; empty and load-error states mount an
+// original illustration. All gated on prefers-reduced-motion — search, delete, and paging behave
+// identically either way, and the empty/error copy is unchanged so the existing suite stays green.
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import type { HistoryItem, WebApi } from '../api/client';
 import { formatRelative } from './relative-time';
 import { TrashIcon } from './icons';
+import { HistoryEmptyArt, ErrorStateArt } from '../assets/illustrations';
+import { AnimatePresence, motion, listItem, useReducedMotion } from '../motion';
 
 export interface HistoryPanelProps {
   api: WebApi;
@@ -15,6 +21,7 @@ export interface HistoryPanelProps {
 }
 
 export function HistoryPanel({ api, debounceMs = 300, now }: HistoryPanelProps): JSX.Element {
+  const reduced = useReducedMotion();
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [cursor, setCursor] = useState<string | undefined>(undefined);
@@ -87,39 +94,48 @@ export function HistoryPanel({ api, debounceMs = 300, now }: HistoryPanelProps):
         />
       </div>
 
-      {error ? (
+      {error && items.length > 0 ? (
         <div className="result__note result__note--warn" role="alert">
           {error}
         </div>
       ) : null}
 
       {items.length === 0 && !loading ? (
-        <p className="history__empty">
-          {query ? 'No matching dictations.' : 'Your dictations will appear here.'}
-        </p>
+        <div className="empty-state">
+          {error ? <ErrorStateArt /> : <HistoryEmptyArt />}
+          <p className="history__empty" role={error ? 'alert' : undefined}>
+            {error
+              ? error
+              : query
+                ? 'No matching dictations.'
+                : 'Your dictations will appear here.'}
+          </p>
+        </div>
       ) : (
         <ul className="history__list">
-          {items.map((item) => (
-            <li key={item.id} className="history__item">
-              <div className="grow">
-                <div className="session__meta">
-                  <span className="tag">{item.register}</span>
-                  <span>{item.appName}</span>
-                  <span>{item.wordCount} words</span>
-                  <span>{formatRelative(item.createdAt, now?.())}</span>
+          <AnimatePresence initial={false}>
+            {items.map((item) => (
+              <motion.li key={item.id} className="history__item" {...listItem(reduced)}>
+                <div className="grow">
+                  <div className="session__meta">
+                    <span className="tag">{item.register}</span>
+                    <span>{item.appName}</span>
+                    <span>{item.wordCount} words</span>
+                    <span>{formatRelative(item.createdAt, now?.())}</span>
+                  </div>
+                  <p className="session__text">{item.text}</p>
                 </div>
-                <p className="session__text">{item.text}</p>
-              </div>
-              <button
-                type="button"
-                className="icon-btn"
-                aria-label="Delete entry"
-                onClick={() => void remove(item.id)}
-              >
-                <TrashIcon />
-              </button>
-            </li>
-          ))}
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Delete entry"
+                  onClick={() => void remove(item.id)}
+                >
+                  <TrashIcon />
+                </button>
+              </motion.li>
+            ))}
+          </AnimatePresence>
         </ul>
       )}
 

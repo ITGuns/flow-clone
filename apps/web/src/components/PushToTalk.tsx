@@ -1,8 +1,13 @@
 // The push-to-talk control: hold SPACEBAR (global) or press-and-hold the on-screen button. Mirrors
 // the desktop key-down/key-up interaction (ARCHITECTURE §2) translated to the browser. A live mic
 // level animates the ring + cadence bars so silent-mic failure is visible.
+//
+// Motion (4j): the button springs down on press and lifts a terracotta glow ring while listening;
+// the concentric breath ring is driven by the live `micLevel` prop (CSS var). ALL of it is gated on
+// prefers-reduced-motion — the start/stop behaviour and DOM structure are identical either way.
 import { useEffect, useRef, type CSSProperties, type JSX } from 'react';
 import { MicIcon } from './icons';
+import { motion, useReducedMotion } from '../motion';
 
 export interface PushToTalkProps {
   isRecording: boolean;
@@ -27,6 +32,7 @@ export function PushToTalk({
   onStart,
   onStop,
 }: PushToTalkProps): JSX.Element {
+  const reduced = useReducedMotion();
   const holdingRef = useRef(false);
   const startRef = useRef(onStart);
   const stopRef = useRef(onStop);
@@ -82,9 +88,17 @@ export function PushToTalk({
     return Math.min(1, level * wobble + (isRecording ? 0.08 : 0));
   });
 
+  // Press scale + settle. Static when reduced.
+  const buttonAnim = reduced
+    ? {}
+    : {
+        animate: { scale: isRecording ? 0.97 : 1 },
+        transition: { type: 'spring' as const, stiffness: 380, damping: 26 },
+      };
+
   return (
     <div className="ptt">
-      <button
+      <motion.button
         type="button"
         className={`ptt__button${isRecording ? ' is-recording' : ''}`}
         disabled={disabled}
@@ -94,7 +108,23 @@ export function PushToTalk({
         onMouseUp={pressStop}
         onMouseLeave={pressStop}
         style={{ '--level': String(level) } as CSSProperties}
+        {...buttonAnim}
       >
+        {/* Terracotta glow, pulsing while listening (motion; hidden when reduced). */}
+        <motion.span
+          className="ptt__glow"
+          aria-hidden="true"
+          initial={false}
+          animate={
+            reduced
+              ? { opacity: 0 }
+              : {
+                  opacity: isRecording ? [0.45, 0.2, 0.45] : 0,
+                  scale: isRecording ? [1, 1.12, 1] : 0.9,
+                }
+          }
+          transition={reduced ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+        />
         <span className="ptt__ring" aria-hidden="true" />
         {isRecording ? (
           <span className="ptt__cadence" aria-hidden="true">
@@ -106,7 +136,7 @@ export function PushToTalk({
           <MicIcon />
         )}
         <span className="ptt__label">{isRecording ? 'Listening…' : 'Hold to talk'}</span>
-      </button>
+      </motion.button>
       <p className="ptt__hint">
         Hold <kbd>Space</kbd> or press and hold the button, then release to finish.
       </p>

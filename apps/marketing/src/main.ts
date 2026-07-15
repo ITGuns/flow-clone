@@ -1,5 +1,6 @@
 import './styles.css';
 import { parsePreference, resolveTheme, nextTheme, THEME_STORAGE_KEY, type Theme } from './theme';
+import { initAnimations } from './anim';
 
 // ---------------------------------------------------------------------------
 // Theme toggle
@@ -122,6 +123,7 @@ function boot(): void {
   initThemeToggle();
   initMobileNav();
   initBillingToggle();
+  initAnimations();
 }
 
 if (document.readyState === 'loading') {
