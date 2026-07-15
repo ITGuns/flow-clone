@@ -1,5 +1,0 @@
-{
-  "id": "short",
-  "partials": ["he", "hello", "hello world"],
-  "final": "hello world"
-}

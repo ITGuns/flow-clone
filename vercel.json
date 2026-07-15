@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pnpm --filter @undertone/marketing build",
-  "outputDirectory": "apps/marketing/dist",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "framework": null
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite"
 }
