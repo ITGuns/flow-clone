@@ -30,6 +30,8 @@ export interface HealthStatus {
   ok: boolean;
   /** True under MOCK_MODE=1 — the checkout URL is a fake that won't resolve. */
   mock: boolean;
+  /** D-026 hybrid: 'real' = live ASR+formatting; 'partial' = one key; 'mock' = canned fixtures. */
+  speech?: 'real' | 'partial' | 'mock';
 }
 
 export interface HistoryListParams {

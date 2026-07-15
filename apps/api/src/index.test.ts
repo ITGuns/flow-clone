@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { buildServer } from './index';
 import { loadEnv } from './env';
 
@@ -8,7 +8,7 @@ describe('GET /healthz', () => {
     await app.ready();
     const res = await app.inject({ method: 'GET', url: '/healthz' });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ ok: true, mock: true });
+    expect(res.json()).toEqual({ ok: true, mock: true, speech: 'mock' });
     await app.close();
   });
 
@@ -30,7 +30,7 @@ describe('GET /healthz', () => {
     const app = buildServer(loadEnv(realEnv));
     await app.ready();
     const res = await app.inject({ method: 'GET', url: '/healthz' });
-    expect(res.json()).toEqual({ ok: true, mock: false });
+    expect(res.json()).toEqual({ ok: true, mock: false, speech: 'real' });
     await app.close();
   });
 });

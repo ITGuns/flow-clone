@@ -45,7 +45,9 @@ export function App({ deps, api }: AppProps): JSX.Element {
     api
       .getHealth?.()
       .then((h) => {
-        if (!cancelled && h?.mock) setMockMode(true);
+        // Prefer the precise speech-mode signal (D-026 hybrid: keys may make speech real while
+        // the rest stays mocked); fall back to the coarse mock flag for older servers.
+        if (!cancelled && h && (h.speech ? h.speech !== 'real' : h.mock)) setMockMode(true);
       })
       .catch(() => {
         /* unknown health — assume real, no banner */

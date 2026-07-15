@@ -4,7 +4,7 @@
 // routes (§5). Everything sits behind ONE Authenticator instance so the same identity gates REST
 // and WS. `buildServer` stays a thin router that registers what the composition hands it.
 import Anthropic from '@anthropic-ai/sdk';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import Fastify, { type FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import { MockASRProvider, MockFormatter, UndertoneError, toErrorMessage } from '@undertone/shared';
@@ -77,6 +77,8 @@ import { getDb } from './db';
 export interface HealthResponse {
   ok: true;
   mock: boolean;
+  /** D-026: 'real' = live ASR+formatting; 'partial' = one key present; 'mock' = canned fixtures. */
+  speech: 'real' | 'partial' | 'mock';
 }
 
 /** The fixed MOCK_MODE principal (ARCHITECTURE §5). Its id is the token `sub`. */
@@ -120,7 +122,10 @@ export function buildServer(
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   });
 
-  app.get('/healthz', (): HealthResponse => ({ ok: true, mock: env.mock }));
+  app.get(
+    '/healthz',
+    (): HealthResponse => ({ ok: true, mock: env.mock, speech: speechMode(env) }),
+  );
 
   // One Authenticator gates every authenticated surface (§4.1/§5). Falls back to the mock
   // authenticator when no composition is supplied (narrow route tests).
@@ -166,15 +171,33 @@ export function buildServer(
  * fixture-driven MockASRProvider + deterministic MockFormatter (keyless). Real mode →
  * DeepgramASRProvider + HaikuFormatter. Deliberately does NOT wire the Phase 3 hooks — those are
  * composed in `buildComposition`, so a bare provider pair (used by Phase 1 tests) stays hook-free.
+ *
+ * HYBRID SPEECH (D-026): under MOCK_MODE, each speech provider independently goes REAL when its
+ * key is present — real dictation lights up from just DEEPGRAM_API_KEY + ANTHROPIC_API_KEY while
+ * auth/db/redis/stripe stay mocked. `speechMode(env)` reports the result for /healthz + the web
+ * demo-mode banner.
  */
 export function buildGatewayDeps(env: Env): GatewayDeps {
   if (env.mock) {
-    return { asrProvider: new MockASRProvider(), formatter: new MockFormatter() };
+    return {
+      asrProvider: env.deepgramApiKey
+        ? new DeepgramASRProvider({ apiKey: env.deepgramApiKey })
+        : new MockASRProvider(),
+      formatter: env.anthropicApiKey
+        ? new HaikuFormatter({ client: new Anthropic({ apiKey: env.anthropicApiKey }) })
+        : new MockFormatter(),
+    };
   }
   return {
     asrProvider: new DeepgramASRProvider({ apiKey: env.deepgramApiKey }),
     formatter: new HaikuFormatter({ client: new Anthropic({ apiKey: env.anthropicApiKey }) }),
   };
+}
+
+/** 'real' when both speech providers run against live services (§ D-026 hybrid included). */
+export function speechMode(env: Env): 'real' | 'partial' | 'mock' {
+  const real = Number(Boolean(env.deepgramApiKey)) + Number(Boolean(env.anthropicApiKey));
+  return real === 2 ? 'real' : real === 1 ? 'partial' : env.mock ? 'mock' : 'real';
 }
 
 // ── Composition adapters (bridge the usage/billing surfaces onto the auth-module ports) ───────────
@@ -342,6 +365,12 @@ export async function buildComposition(env: Env): Promise<Composition> {
 
 /** Load env, wire the composition, build the server, and start listening. Process entrypoint. */
 export async function start(): Promise<FastifyInstance> {
+  // Load apps/api/.env when present (gitignored; HUMAN_TODO #1-2 keys land here). Node 24 native.
+  try {
+    process.loadEnvFile(fileURLToPath(new URL('../.env', import.meta.url)));
+  } catch {
+    /* no .env yet — mock/hybrid composition handles it */
+  }
   const env = loadEnv();
   const composition = await buildComposition(env);
   const app = buildServer(env, composition.gateway, composition.appDeps);

@@ -162,3 +162,12 @@ anyway. HARD CONSTRAINT: no fabricated social proof (testimonials/logos/user cou
 reference has them, we have no customers; honest sections only. Latency claim grounded in the
 ARCHITECTURE budget. Runs parallel to 4i with disjoint file allowlists (App.tsx/billing/
 pricing.html excluded from 4j).
+
+## 2026-07-15 - D-026: Hybrid speech mode (user directive: "make it functional")
+User rejects demo mode; real dictation requires Deepgram + Anthropic accounts only a human can
+create (HUMAN_TODO #1-2). Composition change: under MOCK_MODE, each speech provider goes REAL
+independently when its key is present (DeepgramASRProvider / HaikuFormatter), while auth/db/
+redis/stripe stay mocked - so two .env keys light up real dictation with zero infrastructure.
+start() auto-loads apps/api/.env (node process.loadEnvFile). /healthz gained speech:
+real|partial|mock; the web demo banner keys off it. Verified live: no keys -> mock, one key ->
+partial. Real-mode Deepgram/Haiku wire calls remain unverified until real keys arrive.
