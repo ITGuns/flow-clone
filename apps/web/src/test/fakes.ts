@@ -9,7 +9,15 @@ import type {
   DictationEvents,
 } from '../ws/dictation-client';
 import type { DictationDeps } from '../dictation/useDictation';
-import type { HistoryListParams, HistoryListResult, MeResponse, WebApi } from '../api/client';
+import type { BrowserDictationDeps } from '../dictation/useBrowserDictation';
+import type { Recognizer, RecognizerEvents } from '../speech/browser-recognizer';
+import type {
+  FormatTranscriptResult,
+  HistoryListParams,
+  HistoryListResult,
+  MeResponse,
+  WebApi,
+} from '../api/client';
 
 export class FakeDictationClient implements DictationClientLike {
   readonly events: DictationEvents;
@@ -121,6 +129,46 @@ export class FakeCapture implements AudioCaptureLike {
   }
 }
 
+/** A scripted fake of the browser-speech {@link Recognizer} — drive it with the emit/resolve helpers. */
+export class FakeRecognizer implements Recognizer {
+  private events: RecognizerEvents = {};
+  started = 0;
+  aborted = 0;
+  private running = false;
+  private readonly stopResolvers: ((transcript: string) => void)[] = [];
+
+  get active(): boolean {
+    return this.running;
+  }
+
+  start(events: RecognizerEvents): void {
+    this.events = events;
+    this.started += 1;
+    this.running = true;
+  }
+  stop(): Promise<string> {
+    this.running = false;
+    return new Promise<string>((resolve) => this.stopResolvers.push(resolve));
+  }
+  abort(): void {
+    this.aborted += 1;
+    this.running = false;
+  }
+
+  // ── drivers ──────────────────────────────────────────────────────────────────────────────
+  emitInterim(text: string): void {
+    this.events.onInterim?.(text);
+  }
+  emitError(error: string, message = ''): void {
+    this.events.onError?.({ error, message });
+  }
+  /** Resolve the pending stop() with the finalized transcript. */
+  resolveStop(transcript: string): void {
+    const resolve = this.stopResolvers.shift();
+    if (resolve) resolve(transcript);
+  }
+}
+
 export interface FakeDepsHandle {
   deps: DictationDeps;
   client(): FakeDictationClient;
@@ -151,6 +199,34 @@ export function makeFakeDeps(): FakeDepsHandle {
   };
 }
 
+export interface FakeBrowserHandle {
+  browser: BrowserDictationDeps;
+  recognizer: FakeRecognizer;
+  formatCalls: { transcript: string; appContext: AppContext }[];
+}
+
+/** Build browser-speech deps backed by a single {@link FakeRecognizer} + a scripted format result. */
+export function makeFakeBrowserDeps(result?: Partial<FormatTranscriptResult>): FakeBrowserHandle {
+  const recognizer = new FakeRecognizer();
+  const formatCalls: { transcript: string; appContext: AppContext }[] = [];
+  const merged: FormatTranscriptResult = {
+    text: 'Hello world.',
+    wordCount: 2,
+    commandsApplied: [],
+    usage: { wordsThisWeek: 42, limit: 50000 },
+    exceeded: false,
+    ...result,
+  };
+  const browser: BrowserDictationDeps = {
+    createRecognizer: () => recognizer,
+    formatTranscript: (transcript, appContext) => {
+      formatCalls.push({ transcript, appContext });
+      return Promise.resolve(merged);
+    },
+  };
+  return { browser, recognizer, formatCalls };
+}
+
 const DEFAULT_ME: MeResponse = {
   userId: 'user_mock',
   email: 'mock@undertone.dev',
@@ -159,20 +235,32 @@ const DEFAULT_ME: MeResponse = {
   usage: { wordsThisWeek: 120, limit: 50000 },
 };
 
+const DEFAULT_FORMAT: FormatTranscriptResult = {
+  text: 'Hello world.',
+  wordCount: 2,
+  commandsApplied: [],
+  usage: { wordsThisWeek: 42, limit: 50000 },
+  exceeded: false,
+};
+
 export interface FakeApiOptions {
   me?: MeResponse;
   history?: (params: HistoryListParams) => HistoryListResult;
+  format?: FormatTranscriptResult;
 }
 
 export class FakeApi implements WebApi {
   readonly listCalls: HistoryListParams[] = [];
   readonly deleted: string[] = [];
+  readonly formatCalls: { transcript: string; appContext: AppContext }[] = [];
   private readonly meValue: MeResponse;
   private readonly historyHandler: (params: HistoryListParams) => HistoryListResult;
+  private readonly formatValue: FormatTranscriptResult;
 
   constructor(options: FakeApiOptions = {}) {
     this.meValue = options.me ?? DEFAULT_ME;
     this.historyHandler = options.history ?? (() => ({ items: [] }));
+    this.formatValue = options.format ?? DEFAULT_FORMAT;
   }
 
   getSessionToken(): Promise<string> {
@@ -188,5 +276,9 @@ export class FakeApi implements WebApi {
   deleteHistory(id: string): Promise<void> {
     this.deleted.push(id);
     return Promise.resolve();
+  }
+  formatTranscript(transcript: string, appContext: AppContext): Promise<FormatTranscriptResult> {
+    this.formatCalls.push({ transcript, appContext });
+    return Promise.resolve(this.formatValue);
   }
 }

@@ -117,6 +117,41 @@ describe('RestApiClient — POST /v1/billing/checkout', () => {
   });
 });
 
+describe('RestApiClient — POST /v1/format', () => {
+  it('POSTs the transcript + appContext with a bearer token and returns the formatted result', async () => {
+    const bodies: string[] = [];
+    const result = {
+      text: 'Hello world.',
+      wordCount: 2,
+      commandsApplied: ['period'],
+      usage: { wordsThisWeek: 42, limit: 50000 },
+      exceeded: false,
+    };
+    const { fetch, calls } = recorder((call) =>
+      call.url.endsWith('/session/token') ? json({ token: 'tok-7', expiresAt: 'x' }) : json(result),
+    );
+    const wrapped: FetchFn = async (url, init) => {
+      if (typeof init?.body === 'string' && String(url).includes('/v1/format')) {
+        bodies.push(init.body);
+      }
+      return fetch(url, init);
+    };
+    const client = new RestApiClient({ baseUrl: BASE, fetch: wrapped });
+    const appContext = {
+      bundleId: 'web.dashboard',
+      appName: 'Undertone Web',
+      windowTitle: '',
+      register: 'email' as const,
+    };
+    const res = await client.formatTranscript('hello world period', appContext);
+    expect(res).toEqual(result);
+    const call = calls.find((c) => c.url.endsWith('/v1/format'));
+    expect(call?.method).toBe('POST');
+    expect(call?.auth).toBe('Bearer tok-7');
+    expect(bodies).toEqual([JSON.stringify({ transcript: 'hello world period', appContext })]);
+  });
+});
+
 describe('RestApiClient — GET /healthz', () => {
   it('reads the unauthenticated health body (no bearer)', async () => {
     const { fetch, calls } = recorder(() => json({ ok: true, mock: true }));

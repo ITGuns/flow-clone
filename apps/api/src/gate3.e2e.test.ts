@@ -191,6 +191,42 @@ describe('Phase 3 gate — full backend E2E (composition root, keyless MOCK_MODE
     expect(hist.items).toEqual([]);
   });
 
+  it('REST /v1/format: browser transcript → formatted text + usage + history persisted (D-026 wiring)', async () => {
+    const { httpBase } = await boot();
+
+    const res = await fetch(`${httpBase}/v1/format`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ transcript: 'hello world period', appContext: APP_CONTEXT }),
+    });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      text: string;
+      wordCount: number;
+      commandsApplied: string[];
+      usage: { wordsThisWeek: number; limit: number } | null;
+      exceeded: boolean;
+    };
+    // The SAME MockFormatter the WS path uses → identical polished output + §4.3 command telemetry.
+    expect(body.text).toBe('Hello world.');
+    expect(body.wordCount).toBe(2);
+    expect(body.commandsApplied).toContain('period');
+    expect(body.usage).toEqual({ wordsThisWeek: 2, limit: 50000 });
+    expect(body.exceeded).toBe(false);
+
+    // Persisted through the SAME hook instance the gateway got → readable via GET /v1/history (§7).
+    const hist = (await (await fetch(`${httpBase}/v1/history`)).json()) as {
+      items: Array<{ text: string; wordCount: number }>;
+    };
+    expect(hist.items.map((i) => i.text)).toContain('Hello world.');
+
+    // /v1/me reflects the metered words (meter hook + reader share the same Redis counter).
+    const me = (await (await fetch(`${httpBase}/v1/me`)).json()) as {
+      usage: { wordsThisWeek: number };
+    };
+    expect(me.usage.wordsThisWeek).toBe(2);
+  });
+
   it('WS: utterance → usage.update (incremented) + history persisted + dictionary reached formatter', async () => {
     const spy = new SpyFormatter();
     const { wsUrl, httpBase } = await boot({ formatter: spy });

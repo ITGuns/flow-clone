@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach } from 'vitest';
-import { App } from './App';
-import { FakeApi, makeFakeDeps } from './test/fakes';
+import { App, type BrowserSpeechProvider } from './App';
+import { FakeApi, FakeRecognizer, makeFakeDeps } from './test/fakes';
+import type { HealthStatus } from './api/client';
 import {
   buttonByText,
   click,
@@ -12,6 +13,20 @@ import {
   text,
   type Mounted,
 } from './test/harness';
+
+/** A FakeApi with a scripted `/healthz` response (App reads it to pick the speech mode). */
+function apiWithHealth(health: HealthStatus): FakeApi {
+  return Object.assign(new FakeApi(), { getHealth: () => Promise.resolve(health) });
+}
+
+const supportedSpeech: BrowserSpeechProvider = {
+  supported: () => true,
+  createRecognizer: () => new FakeRecognizer(),
+};
+const unsupportedSpeech: BrowserSpeechProvider = {
+  supported: () => false,
+  createRecognizer: () => new FakeRecognizer(),
+};
 
 let mounted: Mounted | null = null;
 afterEach(async () => {
@@ -64,6 +79,41 @@ describe('App shell', () => {
   it('shows no demo banner when health is unavailable or real-mode', async () => {
     mounted = await mount(<App deps={makeFakeDeps().deps} api={new FakeApi()} />);
     await flush();
+    expect(mounted.container.querySelector('.demo-note')).toBeNull();
+  });
+
+  it('shows the browser-speech note (not the demo banner) when browser mode is active', async () => {
+    const api = apiWithHealth({ ok: true, mock: true });
+    mounted = await mount(
+      <App deps={makeFakeDeps().deps} api={api} browserSpeech={supportedSpeech} />,
+    );
+    await flush();
+    const note = query<HTMLElement>(mounted.container, '.speech-note');
+    const body = text(note).toLowerCase();
+    expect(body).toContain('built-in speech recognition');
+    expect(body).toContain('no api keys needed');
+    expect(body).toContain('google'); // honest privacy note — audio goes to the browser vendor
+    expect(mounted.container.querySelector('.demo-note')).toBeNull();
+  });
+
+  it('falls back to the demo banner when the browser has no speech recognition (e.g. Firefox)', async () => {
+    const api = apiWithHealth({ ok: true, mock: true });
+    mounted = await mount(
+      <App deps={makeFakeDeps().deps} api={api} browserSpeech={unsupportedSpeech} />,
+    );
+    await flush();
+    const note = query<HTMLElement>(mounted.container, '.demo-note');
+    expect(text(note)).toContain('Demo mode');
+    expect(mounted.container.querySelector('.speech-note')).toBeNull();
+  });
+
+  it('shows no note at all when the server does real speech', async () => {
+    const api = apiWithHealth({ ok: true, mock: false, speech: 'real' });
+    mounted = await mount(
+      <App deps={makeFakeDeps().deps} api={api} browserSpeech={supportedSpeech} />,
+    );
+    await flush();
+    expect(mounted.container.querySelector('.speech-note')).toBeNull();
     expect(mounted.container.querySelector('.demo-note')).toBeNull();
   });
 

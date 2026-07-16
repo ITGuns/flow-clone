@@ -4,7 +4,7 @@
 // mode authenticates automatically) and sent as the bearer on the authenticated reads. In real
 // mode those reads expect a Clerk bearer — wiring Clerk into the web app is out of scope for web v1
 // (DECISIONS D-023); the dashboard targets mock mode end-to-end.
-import type { HistoryItem, Register } from '@undertone/shared';
+import type { AppContext, HistoryItem, Register } from '@undertone/shared';
 
 export type Plan = 'free' | 'pro';
 
@@ -23,6 +23,20 @@ export type CheckoutInterval = 'monthly' | 'yearly';
 /** `POST /v1/billing/checkout` 200 body — the hosted Stripe Checkout URL to open. */
 export interface CheckoutResponse {
   url: string;
+}
+
+/**
+ * `POST /v1/format` 200 body (D-026 browser-native speech path). Mirrors the api's `FormatResponse`
+ * (apps/api/src/routes/format.ts). `usage` is `null` when nothing was metered (empty transcript);
+ * `unformatted` is present+true only on the §8 raw-injection fallback.
+ */
+export interface FormatTranscriptResult {
+  text: string;
+  wordCount: number;
+  commandsApplied: string[];
+  usage: { wordsThisWeek: number; limit: number } | null;
+  exceeded: boolean;
+  unformatted?: boolean;
 }
 
 /** `GET /healthz` 200 body (apps/api/src/index.ts `HealthResponse`). */
@@ -81,6 +95,11 @@ export interface WebApi {
   createCheckout?(interval: CheckoutInterval): Promise<CheckoutResponse>;
   /** Read `/healthz` (unauthenticated) — the billing UI uses `mock` to gate `window.open`. */
   getHealth?(): Promise<HealthStatus>;
+  /**
+   * `POST /v1/format` — send a browser-recognized transcript for server-side formatting (D-026).
+   * Optional so the existing history-only fakes stay valid; the concrete client always implements it.
+   */
+  formatTranscript?(transcript: string, appContext: AppContext): Promise<FormatTranscriptResult>;
 }
 
 function kindForStatus(status: number): ApiErrorKind {
@@ -138,6 +157,19 @@ export class RestApiClient implements WebApi {
   async getHealth(): Promise<HealthStatus> {
     const res = await this.request(`${this.baseUrl}/healthz`, { method: 'GET' });
     return (await res.json()) as HealthStatus;
+  }
+
+  /** Bearer-authenticated `POST /v1/format` → formatted text + usage (D-026 browser-speech path). */
+  async formatTranscript(
+    transcript: string,
+    appContext: AppContext,
+  ): Promise<FormatTranscriptResult> {
+    const res = await this.authed(`${this.baseUrl}/v1/format`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript, appContext }),
+    });
+    return (await res.json()) as FormatTranscriptResult;
   }
 
   private historyUrl(params: HistoryListParams): string {

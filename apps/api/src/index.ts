@@ -38,6 +38,7 @@ import { registerMeRoute } from './routes/me';
 import { registerDictionaryRoutes } from './routes/dictionary';
 import { registerHistoryRoutes } from './routes/history';
 import { registerBillingRoutes, registerStripeWebhookRoute } from './routes/stripe';
+import { registerFormatRoute } from './routes/format';
 import {
   DictionaryStore,
   DrizzleDictionaryRepo,
@@ -122,10 +123,11 @@ export function buildServer(
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   });
 
-  app.get(
-    '/healthz',
-    (): HealthResponse => ({ ok: true, mock: env.mock, speech: speechMode(env) }),
-  );
+  app.get('/healthz', (): HealthResponse => ({
+    ok: true,
+    mock: env.mock,
+    speech: speechMode(env),
+  }));
 
   // One Authenticator gates every authenticated surface (§4.1/§5). Falls back to the mock
   // authenticator when no composition is supplied (narrow route tests).
@@ -146,6 +148,19 @@ export function buildServer(
     registerHistoryRoutes(app, { store: appDeps.transcriptStore, authenticator });
     registerStripeWebhookRoute(app, { service: appDeps.stripeService });
     registerBillingRoutes(app, { service: appDeps.stripeService, authenticator });
+
+    // POST /v1/format (D-026 browser-native speech path) — reuses the EXACT same formatter +
+    // §6/§7/§8 hook instances the WS gateway got (no duplicate construction). Needs the gateway
+    // deps for the formatter + hooks; skipped in the narrow no-gateway route tests.
+    if (gateway) {
+      registerFormatRoute(app, {
+        authenticator,
+        formatter: gateway.formatter,
+        ...(gateway.loadDictionary ? { loadDictionary: gateway.loadDictionary } : {}),
+        ...(gateway.persistTranscript ? { persist: gateway.persistTranscript } : {}),
+        ...(gateway.meterUsage ? { meter: gateway.meterUsage } : {}),
+      });
+    }
   }
 
   // WS gateway (§4) — verifies session JWTs with the same Env secret the token route signs with.
