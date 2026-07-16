@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dnh-clean-statement",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "This is already clean.",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "This is already clean."
+  },
+  {
+    "id": "dnh-clean-short",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "Ready when you are.",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "Ready when you are."
+  },
+  {
+    "id": "dnh-clean-sentence",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "The build passed on the first try.",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "The build passed on the first try."
+  },
+  {
+    "id": "edge-empty-input",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": ""
+  }
+]

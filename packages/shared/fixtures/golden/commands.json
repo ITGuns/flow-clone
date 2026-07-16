@@ -1,0 +1,310 @@
+[
+  {
+    "id": "cmd-disfluency-simple",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "um so uh we think we should ship it",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "So we think we should ship it."
+  },
+  {
+    "id": "cmd-disfluency-er-erm",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "the plan is er ready erm now",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "The plan is ready now."
+  },
+  {
+    "id": "cmd-disfluency-mid-sentence",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "we uh really um like uh this",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "We really like this."
+  },
+  {
+    "id": "cmd-punct-period-comma",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "hello comma world period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "Hello, world."
+  },
+  {
+    "id": "cmd-punct-question-mark",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "are you coming question mark",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "Are you coming?"
+  },
+  {
+    "id": "cmd-punct-exclamation-point",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "watch out exclamation point",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "Watch out!"
+  },
+  {
+    "id": "cmd-new-paragraph",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "first thought new paragraph second thought",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "First thought.\n\nSecond thought."
+  },
+  {
+    "id": "cmd-numbered-list",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "numbered list buy milk new line walk dog end list",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "1. Buy milk\n2. Walk dog"
+  },
+  {
+    "id": "cmd-punct-disfluency-combo",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "um first comma we test period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "First, we test."
+  },
+  {
+    "id": "cmd-allcaps-json",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "the format is all caps json end caps here",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "The format is JSON here."
+  },
+  {
+    "id": "cmd-allcaps-http-punct-combo",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "um the protocol is all caps http end caps comma simple period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "The protocol is HTTP, simple."
+  },
+  {
+    "id": "cmd-allcaps-sql",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "all caps sql end caps queries are fast",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "SQL queries are fast."
+  },
+  {
+    "id": "cmd-quote-basic",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "she replied quote no end quote",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "She replied \"no\"."
+  },
+  {
+    "id": "cmd-quote-period-combo",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "the sign said quote stop end quote period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "The sign said \"stop\"."
+  },
+  {
+    "id": "cmd-quote-question-combo",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "he asked quote are we live end quote question mark",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "He asked \"are we live\"?"
+  },
+  {
+    "id": "cmd-scratch-that",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "we love cats period scratch that we love dogs period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "We love dogs."
+  },
+  {
+    "id": "cmd-scratch-that-combo",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "we ship early period scratch that we ship late period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "We ship late."
+  },
+  {
+    "id": "cmd-list-grocery",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "bullet list milk new line eggs new line bread end list",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "- Milk\n- Eggs\n- Bread"
+  },
+  {
+    "id": "cmd-list-steps",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "bullet list test the code new line ship the build end list",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "- Test the code\n- Ship the build"
+  },
+  {
+    "id": "cmd-sentence-cap-multi",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "we test period then we ship period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "We test. Then we ship."
+  },
+  {
+    "id": "cmd-terminal-period-simple",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "this all works now",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "This all works now."
+  },
+  {
+    "id": "cmd-combo-allcaps-punct",
+    "kind": "command",
+    "haikuOnly": false,
+    "input": "um all caps api end caps calls are fast comma really period",
+    "appContext": {
+      "bundleId": "com.apple.TextEdit",
+      "appName": "TextEdit",
+      "windowTitle": "Untitled",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "API calls are fast, really."
+  }
+]

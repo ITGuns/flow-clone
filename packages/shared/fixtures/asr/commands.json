@@ -1,0 +1,12 @@
+{
+  "id": "commands",
+  "partials": [
+    "the meeting",
+    "the meeting is at noon period",
+    "the meeting is at noon period new line",
+    "the meeting is at noon period new line bring your laptop",
+    "the meeting is at noon period new line bring your laptop scratch that",
+    "the meeting is at noon period new line bring your laptop scratch that bring your charger"
+  ],
+  "final": "the meeting is at noon period new line bring your laptop scratch that bring your charger"
+}

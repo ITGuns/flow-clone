@@ -1,0 +1,44 @@
+[
+  {
+    "id": "fs-day-repair",
+    "kind": "prose",
+    "haikuOnly": true,
+    "input": "so the meeting is on tuesday no wait it's on wednesday",
+    "appContext": {
+      "bundleId": "com.apple.mail",
+      "appName": "Mail",
+      "windowTitle": "New Message",
+      "register": "email"
+    },
+    "dictionary": [],
+    "expected": "The meeting is on Wednesday."
+  },
+  {
+    "id": "fs-recipient-repair",
+    "kind": "prose",
+    "haikuOnly": true,
+    "input": "send it to john i mean to sarah",
+    "appContext": {
+      "bundleId": "com.apple.mail",
+      "appName": "Mail",
+      "windowTitle": "New Message",
+      "register": "email"
+    },
+    "dictionary": [],
+    "expected": "Send it to Sarah."
+  },
+  {
+    "id": "fs-filler-and-restart",
+    "kind": "prose",
+    "haikuOnly": true,
+    "input": "um i think we should uh you know just ship it today",
+    "appContext": {
+      "bundleId": "com.tinyspeck.slackmacgap",
+      "appName": "Slack",
+      "windowTitle": "general (Acme)",
+      "register": "chat"
+    },
+    "dictionary": [],
+    "expected": "I think we should just ship it today."
+  }
+]

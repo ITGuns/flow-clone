@@ -1,17 +1,35 @@
 {
-  "name": "undertone-site",
-  "version": "1.0.0",
+  "name": "undertone",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Undertone marketing website.",
+  "description": "Undertone — cross-platform push-to-talk dictation SaaS (monorepo root).",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=10"
+  },
+  "packageManager": "pnpm@10.31.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "site:build": "pnpm --filter @undertone/marketing build && pnpm --filter @undertone/web build && node scripts/build-site.mjs",
+    "site:serve": "node scripts/serve-site.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "gsap": "^3.13.0",
-    "vite": "^6.0.0"
+    "@eslint/js": "^9.18.0",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.0",
+    "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.20.0",
+    "vitest": "^3.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
   }
 }

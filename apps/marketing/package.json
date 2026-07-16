@@ -1,0 +1,21 @@
+{
+  "name": "@undertone/marketing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Undertone marketing site — landing + pricing + legal stubs. Static Vite build, zero backend, original copy.",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "gsap": "^3.13.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

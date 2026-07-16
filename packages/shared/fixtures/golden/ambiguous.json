@@ -1,0 +1,44 @@
+[
+  {
+    "id": "amb-period-as-word",
+    "kind": "prose",
+    "haikuOnly": true,
+    "input": "the period was difficult for everyone involved",
+    "appContext": {
+      "bundleId": "com.microsoft.Word",
+      "appName": "Microsoft Word",
+      "windowTitle": "Essay.docx",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "The period was difficult for everyone involved."
+  },
+  {
+    "id": "amb-comma-as-word",
+    "kind": "prose",
+    "haikuOnly": true,
+    "input": "put a comma between the two clauses",
+    "appContext": {
+      "bundleId": "com.microsoft.Word",
+      "appName": "Microsoft Word",
+      "windowTitle": "Essay.docx",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "Put a comma between the two clauses."
+  },
+  {
+    "id": "amb-quote-as-verb",
+    "kind": "prose",
+    "haikuOnly": true,
+    "input": "i need to quote him on that in the report",
+    "appContext": {
+      "bundleId": "com.microsoft.Word",
+      "appName": "Microsoft Word",
+      "windowTitle": "Report.docx",
+      "register": "document"
+    },
+    "dictionary": [],
+    "expected": "I need to quote him on that in the report."
+  }
+]
