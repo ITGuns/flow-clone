@@ -171,3 +171,14 @@ redis/stripe stay mocked - so two .env keys light up real dictation with zero in
 start() auto-loads apps/api/.env (node process.loadEnvFile). /healthz gained speech:
 real|partial|mock; the web demo banner keys off it. Verified live: no keys -> mock, one key ->
 partial. Real-mode Deepgram/Haiku wire calls remain unverified until real keys arrive.
+
+## 2026-07-16 - D-027: Browser-native speech mode (zero-key real dictation)
+User: dictation must work without API accounts. Added the Web Speech API path (Chrome/Edge
+built-in recognizer) + POST /v1/format (CONTRACTS v1.5.0): the browser recognizes the user's
+actual words, the server runs the SAME formatter/dictionary/persist/meter hooks as the WS
+pipeline on the transcript. Mode auto-selection: server speech real -> WS streaming; else
+browser recognizer when available; else mock-WS demo. Honest UI notes: recognition is the
+browser vendor's service (not offline); formatting is deterministic until an Anthropic key
+exists. Verified live end-to-end (curl probe: disfluencies stripped, spoken punctuation
+commands executed, usage metered). Voice-command quality now rides on MockFormatter's 4.3
+grammar; full AI formatting activates per-key via D-026 hybrid.

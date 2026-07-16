@@ -5,7 +5,7 @@ friction is reported up to the orchestrator; the orchestrator amends; affected t
 re-dispatch. All types below live in `packages/shared/src/` and are imported — never
 redeclared — by `apps/api` and `apps/desktop`.
 
-Version: 1.4.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
+Version: 1.5.0 (bump minor on additive change, major on breaking; record in DECISIONS.md).
 References to "guide §…" mean `docs/BUILD_GUIDE.md`.
 
 ## 1. Core domain types (`packages/shared/src/types.ts`)
@@ -195,6 +195,7 @@ Server → client:
 | `DELETE /v1/history` | – | `{ ok: true, deleted: number }` | 401 |
 | `POST /v1/webhooks/stripe` | Stripe sig | `{ received: true }` | 400 (bad sig; no auth) |
 | `POST /v1/billing/checkout` | `{ interval: 'monthly'\|'yearly', successUrl?, cancelUrl? }` | `{ url }` | 400, 401 (added in Phase 3e; ratified v1.4.0) |
+| `POST /v1/format` | `{ transcript (≤5000 chars), appContext }` | `{ text, wordCount, commandsApplied, usage: {wordsThisWeek,limit}\|null, exceeded, unformatted? }` | 400, 401 (v1.5.0, D-027 browser-speech path: server-side half of the pipeline for a client-recognized transcript; §8 raw-fallback sets `unformatted:true`; empty transcript → no persist/meter, `usage:null`) |
 
 ```ts
 export interface HistoryItem {
